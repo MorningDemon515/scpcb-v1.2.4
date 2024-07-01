@@ -2,7 +2,7 @@
 Local InitErrorStr$ = ""
 If FileSize("FastExt.dll")=0 Then InitErrorStr=InitErrorStr+ "FastExt.dll"+Chr(13)+Chr(10)
 If FileSize("FastText.dll")=0 Then InitErrorStr=InitErrorStr+ "FastText.dll"+Chr(13)+Chr(10)
-If FileSize("winfix.dll")=0 Then InitErrorStr=InitErrorStr+ "winfix.dll"+Chr(13)+Chr(10)
+If FileSize("d3dim700.dll")=0 Then InitErrorStr=InitErrorStr+ "d3dim700.dll"+Chr(13)+Chr(10)
 
 If Len(InitErrorStr)>0 Then
 	RuntimeError "The following DLLs were not found in the game directory:"+Chr(13)+Chr(10)+Chr(13)+Chr(10)+InitErrorStr
@@ -12,7 +12,8 @@ Include "FastExt.bb"
 Include "FastText_Unicode.bb"
 Include "StrictLoads.bb"
 
-CompatData%(12, 0) ;hopefully this fixes performance issues on Windows 8
+;CompatData%(12, 0) ;hopefully this fixes performance issues on Windows 8
+;No It's Cann't!
 Global OptionFile$ = "options.ini"
 
 Global Font1%, Font2%, Font3%, Font4%, Font5%, Font6%
