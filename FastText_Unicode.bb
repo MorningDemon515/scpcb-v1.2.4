@@ -27,7 +27,7 @@ Const FT_NOBREAK = 256
 Const FT_NOCLIP = 512
 Const FT_CALCRECT = 1024
 
-Function LoadFont(name$="Tahoma", height=13, bold=0, italic=0, underline=0, angle#=0, smooth=FT_ANTIALIASED, encoding=FT_UNICODE)
+Function LoadFont(name$="Tahoma", height=13, bold=0, italic=0, underline=0, angle#=0, smooth=FT_ANTIALIASED, encoding=FT_ASCII)
 	Return LoadFont_(name,height,bold,italic,underline,angle,smooth,encoding)
 End Function
 
@@ -47,11 +47,11 @@ Function FontHeight()
 	Return FontHeight_()
 End Function
 
-Function Text(x, y, txt$, cx=FT_LEFT, cy=FT_TOP, encoding=FT_UNICODE)
+Function Text(x, y, txt$, cx=FT_LEFT, cy=FT_TOP, encoding=FT_ASCII)
 	Text_(x,y,txt,cx,cy,encoding)
 End Function
 
-Function TextRect(x, y, w, h, txt$, formatting=FT_LEFT, encoding=FT_UNICODE)
+Function TextRect(x, y, w, h, txt$, formatting=FT_LEFT, encoding=FT_ASCII)
 	Return TextRect_(x,y,w,h,txt,formatting,encoding)
 End Function
 
