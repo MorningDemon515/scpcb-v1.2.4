@@ -1,9 +1,10 @@
 
 
-Function SaveGame(file$)
-	If Not Playable Then Return ;don't save if the player can't move at all
-	
-	If DropSpeed#>0.02*FPSfactor Or DropSpeed#<-0.02*FPSfactor Then Return
+Function SaveGame(file$,allways_save=False)
+	If allways_save=False
+		If Not Playable Then Return ;don't save if the player can't move at all
+		If DropSpeed#>0.02*FPSfactor Or DropSpeed#<-0.02*FPSfactor Then Return
+	EndIf
 	
 	GameSaved = True
 	
@@ -24,6 +25,22 @@ Function SaveGame(file$)
 	WriteFloat f, EntityX(Head)
 	WriteFloat f, EntityY(Head)
 	WriteFloat f, EntityZ(Head)
+	
+	;-------------NTF-Mod Stuff--------------------
+	WriteInt f,HoldingGun
+	WriteString f,Weapon_InSlot1$
+	WriteString f,Weapon_InSlot2$
+	WriteString f,Weapon_InSlot3$
+	WriteInt f,Weapon_CurrSlot%
+	For g.Guns = Each Guns
+		WriteInt f,g\CurrAmmo
+	Next
+	WriteInt f,P90Ammo
+	WriteInt f,USPAmmo
+	WriteInt f,Kevlar_Health
+	WriteInt f,Kevlar_ExtraHealth
+	WriteInt f,NTF_CurrZone
+	;----------------------------------------------
 	
 	WriteString f, Str(AccessCode)
 	
@@ -153,6 +170,10 @@ Function SaveGame(file$)
 		WriteString f, n\texture
 		
 		WriteFloat f, AnimTime(n\obj)
+		
+		WriteInt f,n\HP%
+		WriteInt f,n\CurrHP%
+		WriteInt f,n\NPCID%
 	Next
 	
 	WriteFloat f, MTFtimer
@@ -390,7 +411,7 @@ Function SaveGame(file$)
 	
 End Function
 
-Function LoadGame(file$)
+Function LoadGame(file$,loadrooms=True)
 	
 	DropSpeed=0.0
 	
@@ -417,6 +438,22 @@ Function LoadGame(file$)
 	z = ReadFloat(f)	
 	PositionEntity(Head, x, y+0.05, z)
 	ResetEntity(Head)
+	
+	;---------------NTF-Mod Stuff-------------------
+	HoldingGun = ReadInt(f)
+	Weapon_InSlot1$ = ReadString(f)
+	Weapon_InSlot2$ = ReadString(f)
+	Weapon_InSlot3$ = ReadString(f)
+	Weapon_CurrSlot% = ReadInt(f)
+	For g.Guns = Each Guns
+		g\CurrAmmo = ReadInt(f)
+	Next
+	P90Ammo = ReadInt(f)
+	USPAmmo = ReadInt(f)
+	Kevlar_Health = ReadInt(f)
+	Kevlar_ExtraHealth = ReadInt(f)
+	NTF_CurrZone = ReadInt(f)
+	;-----------------------------------------------
 	
 	AccessCode = Int(ReadString(f))
 	
@@ -551,6 +588,10 @@ Function LoadGame(file$)
 				SetAnimTime(n\obj, frame)
 		End Select
 		
+		n\HP% = ReadInt(f)
+		n\CurrHP% = ReadInt(f)
+		n\NPCID% = ReadInt(f)
+		
 	Next
 	
 	For n.npcs = Each NPCs
@@ -592,91 +633,121 @@ Function LoadGame(file$)
 		
 		temp2 = ReadByte(f)		
 		
-		For rt.roomtemplates = Each RoomTemplates
-			If rt\id = roomtemplateID Then
-				r.Rooms = CreateRoom(level, rt\shape, x, y, z, rt\name)
-				TurnEntity(r\obj, 0, angle, 0)
-				r\angle = angle
-				r\found = found
-				Exit
-			End If
-		Next
-		
-		If temp2 = 1 Then PlayerRoom = r.Rooms
-		
-		For x = 0 To 11
-			id = ReadInt(f)
-			If id > 0 Then
-				For n.npcs = Each NPCs
-					If n\id = id Then r\NPC[x]=n : Exit
-				Next
-			EndIf
-		Next
-		
-		For x=0 To 11
-			id = ReadByte(f)
-			If id=2 Then
-				Exit
-			Else If id=1 Then
-				RotateEntity(r\Levers[x], 78, EntityYaw(r\Levers[x]), 0)
-			Else
-				RotateEntity(r\Levers[x], -78, EntityYaw(r\Levers[x]), 0)
-			EndIf
-		Next
-		
-		If ReadByte(f)=1 Then ;this room has a grid
-			If r\grid<>Null Then ;remove the old grid content
-				For x=0 To gridsz-1
-					For y=0 To gridsz-1
-						If r\grid\Entities[x+(y*gridsz)]<>0 Then
-							FreeEntity r\grid\Entities[x+(y*gridsz)]
-							r\grid\Entities[x+(y*gridsz)]=0
-						EndIf
-						If r\grid\waypoints[x+(y*gridsz)]<>Null Then
-							RemoveWaypoint(r\grid\waypoints[x+(y*gridsz)])
-							r\grid\waypoints[x+(y*gridsz)]=Null
+		If loadrooms = True
+			For rt.roomtemplates = Each RoomTemplates
+				If rt\id = roomtemplateID Then
+					r.Rooms = CreateRoom(level, rt\shape, x, y, z, rt\name)
+					TurnEntity(r\obj, 0, angle, 0)
+					r\angle = angle
+					r\found = found
+					Exit
+				End If
+			Next
+			
+			If temp2 = 1 Then PlayerRoom = r.Rooms
+			
+			For x = 0 To 11
+				id = ReadInt(f)
+				If id > 0 Then
+					For n.npcs = Each NPCs
+						If n\id = id Then r\NPC[x]=n : Exit
+					Next
+				EndIf
+			Next
+			
+			For x=0 To 11
+				id = ReadByte(f)
+				If id=2 Then
+					Exit
+				Else If id=1 Then
+					RotateEntity(r\Levers[x], 78, EntityYaw(r\Levers[x]), 0)
+				Else
+					RotateEntity(r\Levers[x], -78, EntityYaw(r\Levers[x]), 0)
+				EndIf
+			Next
+				
+			If ReadByte(f)=1 Then ;this room has a grid
+				If r\grid<>Null Then ;remove the old grid content
+					For x=0 To gridsz-1
+						For y=0 To gridsz-1
+							If r\grid\Entities[x+(y*gridsz)]<>0 Then
+								FreeEntity r\grid\Entities[x+(y*gridsz)]
+								r\grid\Entities[x+(y*gridsz)]=0
+							EndIf
+							If r\grid\waypoints[x+(y*gridsz)]<>Null Then
+								RemoveWaypoint(r\grid\waypoints[x+(y*gridsz)])
+								r\grid\waypoints[x+(y*gridsz)]=Null
+							EndIf
+						Next
+					Next
+					For x=0 To 5
+						If r\grid\Meshes[x]<>0 Then
+							FreeEntity r\grid\Meshes[x]
+							r\grid\Meshes[x]=0
 						EndIf
 					Next
+					Delete r\grid
+				EndIf
+				r\grid=New Grids
+				For y=0 To gridsz-1
+					For x=0 To gridsz-1
+						r\grid\grid[x+(y*gridsz)]=ReadByte(f)
+						r\grid\angles[x+(y*gridsz)]=ReadByte(f)
+						;get only the necessary data, make the event handle the meshes and waypoints separately
+					Next
 				Next
-				For x=0 To 5
-					If r\grid\Meshes[x]<>0 Then
-						FreeEntity r\grid\Meshes[x]
-						r\grid\Meshes[x]=0
-					EndIf
-				Next
-				Delete r\grid
 			EndIf
-			r\grid=New Grids
-			For y=0 To gridsz-1
-				For x=0 To gridsz-1
-					r\grid\grid[x+(y*gridsz)]=ReadByte(f)
-					r\grid\angles[x+(y*gridsz)]=ReadByte(f)
-					;get only the necessary data, make the event handle the meshes and waypoints separately
+			
+			If ReadByte(f)=1 Then ;this room has a forest
+				If r\fr<>Null Then ;remove the old forest
+					DestroyForest(r\fr)
+				Else
+					r\fr=New Forest
+				EndIf
+				For y=0 To gridsize-1
+					Local sssss$ = ""
+					For x=0 To gridsize-1
+						r\fr\grid[x+(y*gridsize)]=ReadByte(f)
+						sssss=sssss+Str(r\fr\grid[x+(y*gridsize)])
+					Next
+					DebugLog sssss
 				Next
-			Next
-		EndIf
-		
-		If ReadByte(f)=1 Then ;this room has a forest
-			If r\fr<>Null Then ;remove the old forest
+				lx# = ReadFloat(f)
+				ly# = ReadFloat(f)
+				lz# = ReadFloat(f)
+				PlaceForest(r\fr,lx,ly,lz,r)
+			ElseIf r\fr<>Null Then ;remove the old forest
 				DestroyForest(r\fr)
-			Else
-				r\fr=New Forest
+				Delete r\fr
 			EndIf
-			For y=0 To gridsize-1
-				Local sssss$ = ""
-				For x=0 To gridsize-1
-					r\fr\grid[x+(y*gridsize)]=ReadByte(f)
-					sssss=sssss+Str(r\fr\grid[x+(y*gridsize)])
-				Next
-				DebugLog sssss
+		Else ;some lazy code for not getting the save file corrupted (for the SZL feature)
+			For x = 0 To 11
+				nothing3=ReadInt(f)
 			Next
-			lx# = ReadFloat(f)
-			ly# = ReadFloat(f)
-			lz# = ReadFloat(f)
-			PlaceForest(r\fr,lx,ly,lz,r)
-		ElseIf r\fr<>Null Then ;remove the old forest
-			DestroyForest(r\fr)
-			Delete r\fr
+			For x=0 To 11
+				nothing=ReadByte(f)
+			Next
+			If ReadByte(f)=1
+				For y=0 To gridsz-1
+					For x=0 To gridsz-1
+						nothing=ReadByte(f)
+						nothing=ReadByte(f)
+					Next
+				Next
+			EndIf
+			If ReadByte(f)=1
+				For y=0 To gridsize-1
+					For x=0 To gridsize-1
+						nothing=ReadByte(f)
+					Next
+				Next
+				nothing2#=ReadFloat(f)
+				nothing2#=ReadFloat(f)
+				nothing2#=ReadFloat(f)
+			EndIf
+			nothing=0
+			nothing2=0
+			nothing3=0
 		EndIf
 		
 	Next
@@ -1008,6 +1079,23 @@ Function LoadGameQuick(file$)
 	PositionEntity(Head, x, y+0.05, z)
 	ResetEntity(Head)
 	
+	;---------------NTF-Mod Stuff-------------------
+	HoldingGun = ReadInt(f)
+	Weapon_InSlot1$ = ReadString(f)
+	Weapon_InSlot2$ = ReadString(f)
+	Weapon_InSlot3$ = ReadString(f)
+	Weapon_CurrSlot% = ReadInt(f)
+	For g.Guns = Each Guns
+		g\CurrAmmo = ReadInt(f)
+	Next
+	P90Ammo = ReadInt(f)
+	USPAmmo = ReadInt(f)
+	Kevlar_Health = ReadInt(f)
+	Kevlar_ExtraHealth = ReadInt(f)
+	
+	ShowEntity GunPivot
+	;-----------------------------------------------
+	
 	AccessCode = Int(ReadString(f))
 	
 	x = ReadFloat(f)
@@ -1266,7 +1354,7 @@ Function LoadGameQuick(file$)
 			Delete r\fr
 		EndIf
 		
-		If temp2 = 1 Then PlayerRoom = r.Rooms
+		;If temp2 = 1 Then PlayerRoom = r.Rooms
 	Next
 	
 	InitWayPoints()
@@ -1516,7 +1604,19 @@ Function LoadSaveGames()
 			EndIf
 		End If 
 	Forever 
-	CloseDir myDir 
+	CloseDir myDir
+	
+	For i = 1 To SaveGameAmount
+		If FileType(SavePath + SaveGames(i - 1) + "\save.txt")=0
+			DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z1.SZL")
+			DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z2.SZL")
+			DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z3.SZL")
+			DeleteDir(CurrentDir()+SavePath + SaveGames(i - 1))
+			DebugLog SavePath + SaveGames(i - 1)
+			SaveGameAmount=SaveGameAmount-1
+			SaveGames(i - 1)=""
+		EndIf
+	Next
 	
 	Dim SaveGameTime$(SaveGameAmount + 1)
 	Dim SaveGameDate$(SaveGameAmount + 1)
@@ -1571,7 +1671,7 @@ Function LoadMap(file$)
 	While Not Eof(f)
 		x = ReadByte(f)
 		y = ReadByte(f)
-		name$ = Lower(ReadString(f))
+		name$ = ReadString(f)
 		
 		angle = ReadByte(f)*90.0
 		
@@ -1582,8 +1682,6 @@ Function LoadMap(file$)
 			If Lower(rt\Name) = name Then
                 
                 r.Rooms = CreateRoom(0, rt\Shape, x * 8.0, 0, y * 8.0, name)
-				DebugLog "createroom"
-				
                 r\angle = angle
                 If rt\Shape = ROOM2C Then r\angle = r\angle+90 Else r\angle = r\angle-180
                 
@@ -1612,7 +1710,7 @@ Function LoadMap(file$)
 	
 	temp = 0
 	Local spacing# = 8.0
-	For y = MapHeight - 1 To 1 Step - 1
+	For y = MapHeight - 1 To 0 Step - 1
 		
 		If y < MapHeight/3+1 Then
 			zone=3
@@ -1647,13 +1745,15 @@ Function LoadMap(file$)
 		Next
 	Next   
 	
-	r = CreateRoom(0, ROOM1, 8, 0, (MapHeight-1) * 8, "173")
+	;r = CreateRoom(0, ROOM1, 8, 0, (MapHeight-1) * 8, "173")
 	r = CreateRoom(0, ROOM1, (MapWidth-1) * 8, 0, (MapHeight-1) * 8, "pocketdimension")
 	r = CreateRoom(0, ROOM1, 0, 0, 8, "gatea")
+	r = CreateRoom(0, ROOM1, 8, 30, (MapHeight-4) * 8, "dimension1499")
 	
-	CreateEvent("173", "173", 0)
+	;CreateEvent("173", "173", 0)
 	CreateEvent("pocketdimension", "pocketdimension", 0)   
 	CreateEvent("gatea", "gatea", 0)
+	CreateEvent("dimension1499", "dimension1499", 0)
 	
 	For r.Rooms = Each Rooms
 		r\Adjacent[0]=Null
@@ -1662,21 +1762,25 @@ Function LoadMap(file$)
 		r\Adjacent[3]=Null
 		For r2.Rooms = Each Rooms
 			If r<>r2 Then
-				If r2\z=r\z Then
+                If r2\z=r\z Then
 					If (r2\x)=(r\x+8.0) Then
 						r\Adjacent[0]=r2
 						If r\AdjDoor[0] = Null Then r\AdjDoor[0] = r2\AdjDoor[2]
+						;If r\AdjDoor[0] = Null DebugLog "asd "+r\roomtemplate\Name : Stop
 					ElseIf (r2\x)=(r\x-8.0)
 						r\Adjacent[2]=r2
 						If r\AdjDoor[2] = Null Then r\AdjDoor[2] = r2\AdjDoor[0]
+						;If r\AdjDoor[2] = Null DebugLog "asd "+r\roomtemplate\Name : Stop
 					EndIf
 				ElseIf r2\x=r\x Then
 					If (r2\z)=(r\z-8.0) Then
 						r\Adjacent[1]=r2
 						If r\AdjDoor[1] = Null Then r\AdjDoor[1] = r2\AdjDoor[3]
+						;If r\AdjDoor[1] = Null DebugLog "asd "+r\roomtemplate\Name : Stop
 					ElseIf (r2\z)=(r\z+8.0)
 						r\Adjacent[3]=r2
 						If r\AdjDoor[3] = Null Then r\AdjDoor[3] = r2\AdjDoor[1]
+						;If r\AdjDoor[3] = Null DebugLog "asd "+r\roomtemplate\Name : Stop
 					EndIf
 				EndIf
 			EndIf

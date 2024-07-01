@@ -1,6 +1,8 @@
-Global MenuBack% = LoadImage_Strict("GFX\menu\back.jpg")
+;Global MenuBack% = LoadImage_Strict("GFX\menu\back.jpg")
+Global MenuBack% = LoadImage_Strict("NineTailedFoxMod\GFX\menu\back.jpg")
 Global MenuText% = LoadImage_Strict("GFX\menu\scptext.jpg")
-Global Menu173% = LoadImage_Strict("GFX\menu\173back.jpg")
+;Global Menu173% = LoadImage_Strict("GFX\menu\173back.jpg")
+Global Menu173% = LoadImage_Strict("NineTailedFoxMod\GFX\menu\MTFback.jpg")
 MenuWhite = LoadImage_Strict("GFX\menu\menuwhite.jpg")
 MenuBlack = LoadImage_Strict("GFX\menu\menublack.jpg")
 MaskImage MenuBlack, 255,255,0
@@ -126,59 +128,59 @@ Function UpdateMainMenu()
 	
 	DrawImage(MenuBack, 0, 0)
 	
-	If (MilliSecs() Mod MenuBlinkTimer(0)) >= Rand(MenuBlinkDuration(0)) Then
-		DrawImage(Menu173, GraphicWidth - ImageWidth(Menu173), GraphicHeight - ImageHeight(Menu173))
-	EndIf
+	;If (MilliSecs() Mod MenuBlinkTimer(0)) >= Rand(MenuBlinkDuration(0)) Then
+	DrawImage(Menu173, GraphicWidth - ImageWidth(Menu173), GraphicHeight - ImageHeight(Menu173))
+	;EndIf
 	
-	If Rand(300) = 1 Then
-		MenuBlinkTimer(0) = Rand(4000, 8000)
-		MenuBlinkDuration(0) = Rand(200, 500)
-	End If
+	;If Rand(300) = 1 Then
+	;	MenuBlinkTimer(0) = Rand(4000, 8000)
+	;	MenuBlinkDuration(0) = Rand(200, 500)
+	;End If
 	
 	SetFont Font1
 	
-	MenuBlinkTimer(1)=MenuBlinkTimer(1)-FPSfactor
-	If MenuBlinkTimer(1) < MenuBlinkDuration(1) Then
-		Color(50, 50, 50)
-		Text(MenuStrX + Rand(-5, 5), MenuStrY + Rand(-5, 5), MenuStr, True)
-		If MenuBlinkTimer(1) < 0 Then
-			MenuBlinkTimer(1) = Rand(700, 800)
-			MenuBlinkDuration(1) = Rand(10, 35)
-			MenuStrX = Rand(700, 1000) * MenuScale
-			MenuStrY = Rand(100, 600) * MenuScale
-			
-			Select Rand(0, 22)
-				Case 0, 2, 3
-					MenuStr = "DON'T BLINK"
-				Case 4, 5
-					MenuStr = "Secure. Contain. Protect."
-				Case 6, 7, 8
-					MenuStr = "You want happy endings? Fuck you."
-				Case 9, 10, 11
-					MenuStr = "Sometimes we would have had time to scream."
-				Case 12, 19
-					MenuStr = "NIL"
-				Case 13
-					MenuStr = "NO"
-				Case 14
-					MenuStr = "black white black white black white gray"
-				Case 15
-					MenuStr = "Stone does not care"
-				Case 16
-					MenuStr = "9341"
-				Case 17
-					MenuStr = "It controls the doors"
-				Case 18
-					MenuStr = "e8m106]af173o+079m895w914"
-				Case 20
-					MenuStr = "It has taken over everything"
-				Case 21
-					MenuStr = "The spiral is growing"
-				Case 22
-					MenuStr = "''Some kind of gestalt effect due to massive reality damage''"
-			End Select
-		EndIf
-	EndIf
+	;MenuBlinkTimer(1)=MenuBlinkTimer(1)-FPSfactor
+	;If MenuBlinkTimer(1) < MenuBlinkDuration(1) Then
+	;	Color(50, 50, 50)
+	;	Text(MenuStrX + Rand(-5, 5), MenuStrY + Rand(-5, 5), MenuStr, True)
+	;	If MenuBlinkTimer(1) < 0 Then
+	;		MenuBlinkTimer(1) = Rand(700, 800)
+	;		MenuBlinkDuration(1) = Rand(10, 35)
+	;		MenuStrX = Rand(700, 1000) * MenuScale
+	;		MenuStrY = Rand(100, 600) * MenuScale
+	;		
+	;		Select Rand(0, 22)
+	;			Case 0, 2, 3
+	;				MenuStr = "DON'T BLINK"
+	;			Case 4, 5
+	;				MenuStr = "Secure. Contain. Protect."
+	;			Case 6, 7, 8
+	;				MenuStr = "You want happy endings? Fuck you."
+	;			Case 9, 10, 11
+	;				MenuStr = "Sometimes we would have had time to scream."
+	;			Case 12, 19
+	;				MenuStr = "NIL"
+	;			Case 13
+	;				MenuStr = "NO"
+	;			Case 14
+	;				MenuStr = "black white black white black white gray"
+	;			Case 15
+	;				MenuStr = "Stone does not care"
+	;			Case 16
+	;				MenuStr = "9341"
+	;			Case 17
+	;				MenuStr = "It controls the doors"
+	;			Case 18
+	;				MenuStr = "e8m106]af173o+079m895w914"
+	;			Case 20
+	;				MenuStr = "It has taken over everything"
+	;			Case 21
+	;				MenuStr = "The spiral is growing"
+	;			Case 22
+	;				MenuStr = "''Some kind of gestalt effect due to massive reality damage''"
+	;		End Select
+	;	EndIf
+	;EndIf
 	
 	SetFont Font2
 	
@@ -189,7 +191,7 @@ Function UpdateMainMenu()
 	EndIf
 	
 	If MainMenuTab = 0 Then
-		For i% = 0 To 3
+		For i% = 0 To 4
 			temp = False
 			x = 159 * MenuScale
 			y = (286 + 100 * i) * MenuScale
@@ -202,7 +204,7 @@ Function UpdateMainMenu()
 			Local txt$
 			Select i
 				Case 0
-					txt = "NEW GAME"
+					txt = Lang_Replace("NEW GAME")
 					RandomSeed = ""
 					If temp Then 
 						If Rand(15)=1 Then 
@@ -243,16 +245,20 @@ Function UpdateMainMenu()
 						MainMenuTab = 1
 					EndIf
 				Case 1
-					txt = "LOAD GAME"
+					txt = Lang_Replace("LOAD GAME")
 					If temp Then
 						LoadSaveGames()
 						MainMenuTab = 2
 					EndIf
 				Case 2
-					txt = "OPTIONS"
-					If temp Then MainMenuTab = 3
+					txt = Lang_Replace("OPTIONS")
+					;If temp Then MainMenuTab = 3
+					If temp Then MainMenuTab = 6
 				Case 3
-					txt = "QUIT"
+					txt = Lang_Replace("ACHIEVEMENTS")
+					If temp Then MainMenuTab = 10
+				Case 4
+					txt = Lang_Replace("QUIT")
 					If temp Then
 						DeInitExt
 						End
@@ -276,9 +282,9 @@ Function UpdateMainMenu()
 		
 		DrawFrame(x, y, width, height)
 		
-		If DrawButton(x + width + 20 * MenuScale, y, 580 * MenuScale - width - 20 * MenuScale, height, "BACK", False) Then 
+		If DrawButton(x + width + 20 * MenuScale, y, 580 * MenuScale - width - 20 * MenuScale, height, Lang_Replace("BACK"), False) Then 
 			Select MainMenuTab
-				Case 3 ;save the options
+				Case 3,6,7,8,9 ;save the options
 					PutINIValue(OptionFile, "options", "music volume", MusicVolume)
 					PutINIValue(OptionFile, "options", "mouse sensitivity", MouseSens)
 					PutINIValue(OptionFile, "options", "invert mouse y", InvertMouse)
@@ -294,16 +300,721 @@ Function UpdateMainMenu()
 					PutINIValue(OptionFile, "options", "Sprint key", KEY_SPRINT)
 					PutINIValue(OptionFile, "options", "Inventory key", KEY_INV)
 					PutINIValue(OptionFile, "options", "Crouch key", KEY_CROUCH)
+					
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "disable aim cross", NTF_DisableAimCross)
+					PutINIValue("NineTailedFoxMod\options.ini", "console", "disable opening", NTF_DisableConsoleOpening)
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "reload key", KEY_RELOAD)
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "chat key", KEY_CHAT)
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "togglegun key", KEY_TOGGLEGUN)
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "radiotoggle key", KEY_RADIOTOGGLE)
+					PutINIValue("NineTailedFoxMod\options.ini", "ingame", "texture details", NTF_LODMode)
+					PutINIValue("NineTailedFoxMod\options.ini", "ingame", "seperate zones", NTF_ZoneLoading)
+					PutINIValue("NineTailedFoxMod\options.ini", "ingame", "sfx volume", SFXVolume)
+					PutINIValue("NineTailedFoxMod\options.ini", "ingame", "gun sfx pitch",GunPitchShift)
+					PutINIValue("NineTailedFoxMod\options.ini", "ingame", "lq models",NTF_LQModels)
+					PutINIValue("NineTailedFoxMod\options.ini", "options", "current language",Left(SelectedLangString$,Len(SelectedLangString$)-5))
+					
+					PutINIValue(OptionFile, "options", "framelimit", Framelimit)
+					PutINIValue(OptionFile, "options", "vsync", Vsync)
+					PutINIValue(OptionFile, "options", "achievement popup enabled", AchvMSGenabled)
+					PutINIValue(OptionFile, "options", "show FPS", ShowFPS)
+					PutINIValue(OptionFile, "options", "antialias", NTF_Antialias)
 					MainMenuTab = 0
-				Case 4 ;move back to the "new game" tab
+				Case 4
 					MainMenuTab = 1
 					MouseHit1 = False
+				Case 5
+					MainMenuTab = 3
+					MouseHit1 = False
+				Case 10
+					MainMenuTab = 0
+					NTF_AchvMenuScroll# = 0.0
+				Case 11
+					MainMenuTab = 9
+					NTF_AchvMenuScroll# = 0.0
 				Default
 					MainMenuTab = 0
 			End Select
 		EndIf
 		
 		Select MainMenuTab
+			Case 10 ;Achievements
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("ACHIEVEMENTS"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 480 * MenuScale
+				
+				DrawFrame(x, y, width, height)
+				SetBuffer ImageBuffer(NTF_AchvIMG%)
+				DrawFrame(x, y, width, height)
+				
+				y = y + 20 * MenuScale
+				
+				width = 520 * MenuScale
+				height = 92 * MenuScale
+				x = 190 * MenuScale
+				
+				For i = 0 To MAXACHIEVEMENTS-1
+					If ((y+3*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1)))) > (250*MenuScale) And ((y+3*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1)))) < (900*MenuScale)
+						DrawFrame(x, y+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1))), width, height)
+						If Achievements(i)=True
+							DrawImage AchvIMG(i),x+3*MenuScale,(y+3*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1)))
+							Color 255,255,255
+							SetFont Font5%
+							Text x+100*MenuScale,(y+23*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1))),AchievementStrings(i)
+							Color 200,200,200
+							SetFont Font1%
+							Text x+100*MenuScale,(y+59*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1))),AchievementDescs(i)
+						Else
+							DrawImage AchvLocked,x+3*MenuScale,(y+3*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1)))
+							Color 255,55,55
+							SetFont Font5%
+							Text x+100*MenuScale,(y+23*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1))),Lang_Replace("LOCKED")
+							If AchvProgress(i)>0
+								Color 200,200,200
+								SetFont Font1%
+								Text x+100*MenuScale,(y+59*MenuScale)+(i*97)-(NTF_AchvMenuScroll#*(90*(MAXACHIEVEMENTS-1))),Lang_Replace("Progress: ")+AchvProgress(i)
+							EndIf
+						EndIf
+					EndIf
+				Next
+				SetBuffer BackBuffer()
+				
+				y = 286 * MenuScale
+				height = 70 * MenuScale
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 480 * MenuScale
+				
+				DrawImageRect(NTF_AchvIMG%, x+3*MenuScale, y+3*menuScale, x+3*MenuScale, y+3*MenuScale, width-6*MenuScale, height-6*MenuScale)
+				
+				x = 720 * MenuScale
+				y = 400 * MenuScale
+				width = 30*MenuScale
+				height = 460*MenuScale
+				Local ScrollMenuHeight# = height * ((height / 30) / Max(MAXACHIEVEMENTS, height / 30))
+				
+				NTF_AchvMenuScroll# = DrawScrollBar(x,y,width,height,x, y + ((height - ScrollMenuHeight) * NTF_AchvMenuScroll#)*MenuScale,20*MenuScale,ScrollMenuHeight,NTF_AchvMenuScroll#,1)
+				
+				
+			Case 6 ;---------------------- graphics ------------------------------------------------
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("OPTIONS"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)
+				If DrawButton(x+20*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("GRAPHICS"), False) Then MainMenuTab = 6
+				If DrawButton(x+160*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("AUDIO"), False) Then MainMenuTab = 7
+				If DrawButton(x+300*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("CONTROLS"), False) Then MainMenuTab = 8
+				If DrawButton(x+440*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("ADVANCED"), False) Then MainMenuTab = 9
+				Color 0,255,0
+				Rect x+20*MenuScale,y+15*MenuScale,width/5,height/2,False
+				SetFont Font1
+				
+				y=y+70*MenuScale
+				
+				height = 370 * MenuScale
+				DrawFrame(x, y, width, height)
+				
+				y=y+20*MenuScale
+				
+				Local prevGamma# = ScreenGamma
+				ScreenGamma = (SlideBar(x + 310*MenuScale, y+6*MenuScale, 150*MenuScale, ScreenGamma*50.0)/50.0)
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Screen gamma"))
+				Text (x + 20 * MenuScale, y + 15 * MenuScale, Lang_Replace("(fullscreen mode only)"))
+				
+				If prevGamma<>ScreenGamma Then
+					UpdateScreenGamma()
+				EndIf
+				
+				y=y+40*MenuScale
+				
+				Color 255,255,255				
+				Text (x + 20 * MenuScale, y, Lang_Replace("Enable HUD:"))	
+				HUDenabled = DrawTick(x + 310 * MenuScale, y + MenuScale, HUDenabled)	
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255				
+				Text (x + 20 * MenuScale, y, Lang_Replace("Enable bump mapping:"))	
+				BumpEnabled = DrawTick(x + 310 * MenuScale, y + MenuScale, BumpEnabled)	
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Disable aim cross:"))
+				NTF_DisableAimCross = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_DisableAimCross%)
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Texture details:"))
+				DrawImage ArrowIMG(1),x + 310 * MenuScale, y-4*MenuScale
+				If MouseHit1
+					If ImageRectOverlap(ArrowIMG(1),x + 310 * MenuScale, y-4*MenuScale, MouseX(),MouseY(),0,0)
+						If NTF_LODMode% < 3
+							NTF_LODMode% = NTF_LODMode% + 1
+						Else
+							NTF_LODMode% = 0
+						EndIf
+						PlaySound(ButtonSFX)
+					EndIf
+				EndIf
+				Color 255,255,255
+				Select NTF_LODMode%
+					Case 0
+						Text (x + 340 * MenuScale, y + MenuScale, Lang_Replace("LOW"))
+						NTF_LODValue# = 1.5
+					Case 1
+						Text (x + 340 * MenuScale, y + MenuScale, Lang_Replace("MEDIUM"))
+						NTF_LODValue# = 0.75
+					Case 2
+						Text (x + 340 * MenuScale, y + MenuScale, Lang_Replace("HIGH"))
+						NTF_LODValue# = 0.0
+					Case 3
+						Text (x + 340 * MenuScale, y + MenuScale, Lang_Replace("VERY HIGH"))
+						NTF_LODValue# = -0.75
+				End Select
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Separate zone loading:"))
+				NTF_ZoneLoading = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_ZoneLoading)
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Framelimit:"))
+				CurrFrameLimit# = (SlideBar(x + 310*MenuScale, y+6*MenuScale, 150*MenuScale, CurrFrameLimit#*50.0)/50.0)
+				FrameLimit% = CurrFrameLimit#*200.0
+				Color 255,255,0
+				If FrameLimit% = 0
+					Text (x + 20 * MenuScale, y + 15 * MenuScale, Lang_Replace("Disabled"))
+				Else
+					Text (x + 20 * MenuScale, y + 15 * MenuScale, FrameLimit%+" FPS")
+				EndIf
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y + 30 * MenuScale, Lang_Replace("Disable:"))
+				If DrawTick(x + 120 * MenuScale, y + 30 * MenuScale, 0) Then CurrFrameLimit# = 0.0
+				
+				y=y+60*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("VSync:"))
+				Vsync% = DrawTick(x + 310 * MenuScale, y + MenuScale, Vsync%)
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Antialias:"))
+				NTF_Antialias = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_Antialias%)
+				AntiAlias NTF_Antialias
+				Text (x + 20 * MenuScale, y + 15 * MenuScale, Lang_Replace("(fullscreen mode only)"))
+				
+				y=y+40*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Low quality models:"))
+				NTF_LQModels% = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_LQModels%)
+			Case 7 ;---------------------- sounds ------------------------------------------------
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("OPTIONS"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)
+				If DrawButton(x+20*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("GRAPHICS"), False) Then MainMenuTab = 6
+				If DrawButton(x+160*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("AUDIO"), False) Then MainMenuTab = 7
+				If DrawButton(x+300*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("CONTROLS"), False) Then MainMenuTab = 8
+				If DrawButton(x+440*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("ADVANCED"), False) Then MainMenuTab = 9
+				Color 0,255,0
+				Rect x+160*MenuScale,y+15*MenuScale,width/5,height/2,False
+				SetFont Font1
+				
+				y = y + 70 * MenuScale
+				height = 120 * MenuScale
+				DrawFrame(x, y, width, height)	
+				
+				y = y + 20*MenuScale
+				
+				MusicVolume = (SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, MusicVolume*100.0)/100.0)
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Music volume:"))
+				
+				y = y + 30*MenuScale
+				
+				SFXVolume = (SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, SFXVolume*100.0)/100.0)
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Sound volume:"))
+				If MouseDown1 Then
+					If MouseX() >= x And MouseX() <= x + width + 14 And MouseY() >= y And MouseY() <= y + 20 Then
+						PlayTestSound(True)
+					Else
+						PlayTestSound(False)
+					EndIf
+				Else
+					PlayTestSound(False)
+				EndIf
+				
+				y = y + 30*MenuScale
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Shoot SFX pitch shifting:"))
+				GunPitchShift% = DrawTick(x + 310 * MenuScale, y + MenuScale, GunPitchShift%)
+				
+			Case 8 ;---------------------- controls ------------------------------------------------
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("OPTIONS"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)
+				If DrawButton(x+20*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("GRAPHICS"), False) Then MainMenuTab = 6
+				If DrawButton(x+160*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("AUDIO"), False) Then MainMenuTab = 7
+				If DrawButton(x+300*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("CONTROLS"), False) Then MainMenuTab = 8
+				If DrawButton(x+440*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("ADVANCED"), False) Then MainMenuTab = 9
+				Color 0,255,0
+				Rect x+300*MenuScale,y+15*MenuScale,width/5,height/2,False
+				SetFont Font1
+				
+				y = y + 70 * MenuScale
+				height = 260 * MenuScale
+				DrawFrame(x, y, width, height)	
+				
+				y = y + 20*MenuScale
+				
+				MouseSens = (SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, (MouseSens+0.5)*100.0)/100.0)-0.5
+				Color(255, 255, 255)
+				Text (x + 20 * MenuScale, y, Lang_Replace("Mouse sensitivity:"))
+				
+				y = y + 30*MenuScale
+				
+				Color(255, 255, 255)
+				Text (x + 20 * MenuScale, y, Lang_Replace("Invert mouse Y-axis:"))
+				InvertMouse = DrawTick(x + 310 * MenuScale, y + MenuScale, InvertMouse)
+				
+				y = y + 30*MenuScale
+				Text (x + 20 * MenuScale, y, Lang_Replace("Control configuration:"))
+				y = y + 10*MenuScale
+				
+				Text (x + 20 * MenuScale, y + 20 * MenuScale, Lang_Replace("Up"))
+				InputBox(x + 170 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_UP,210)),5)		
+				Text (x + 20 * MenuScale, y + 40 * MenuScale, Lang_Replace("Left"))
+				InputBox(x + 170 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_LEFT,210)),3)	
+				Text (x + 20 * MenuScale, y + 60 * MenuScale, Lang_Replace("Down"))
+				InputBox(x + 170 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_DOWN,210)),6)				
+				Text (x + 20 * MenuScale, y + 80 * MenuScale, Lang_Replace("Right"))
+				InputBox(x + 170 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RIGHT,210)),4)	
+				
+				Text (x + 300 * MenuScale, y + 20 * MenuScale, Lang_Replace("Blink"))
+				InputBox(x + 450 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_BLINK,210)),7)				
+				Text (x + 300 * MenuScale, y + 40 * MenuScale, Lang_Replace("Sprint"))
+				InputBox(x + 450 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_SPRINT,210)),8)
+				Text (x + 300 * MenuScale, y + 60 * MenuScale, Lang_Replace("Inventory"))
+				InputBox(x + 450 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_INV,210)),9)
+				Text (x + 300 * MenuScale, y + 80 * MenuScale, Lang_Replace("Crouch"))
+				InputBox(x + 450 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_CROUCH,210)),10)
+				
+				Text (x + 20 * MenuScale, y + 100 * MenuScale, Lang_Replace("Chat"))
+				InputBox(x + 170 * MenuScale, y + 100 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_CHAT,210)),11)
+				Text (x + 300 * MenuScale, y + 100 * MenuScale, Lang_Replace("Reload"))
+				InputBox(x + 450 * MenuScale, y + 100 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RELOAD,210)),12)
+				Text (x + 20 * MenuScale, y + 120 * MenuScale, Lang_Replace("Toggle gun"))
+				InputBox(x + 170 * MenuScale, y + 120 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_TOGGLEGUN,210)),13)
+				Text (x + 300 * MenuScale, y + 120 * MenuScale, Lang_Replace("Toggle radio"))
+				InputBox(x + 450 * MenuScale, y + 120 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RADIOTOGGLE,210)),14)
+				
+				For i = 0 To 227
+					If KeyHit(i) Then key = i : Exit
+				Next
+				If key<>0 Then
+					Select SelectedInputBox
+						Case 3
+							KEY_LEFT = key
+						Case 4
+							KEY_RIGHT = key
+						Case 5
+							KEY_UP = key
+						Case 6
+							KEY_DOWN = key
+						Case 7
+							KEY_BLINK = key
+						Case 8
+							KEY_SPRINT = key
+						Case 9
+							KEY_INV = key
+						Case 10
+							KEY_CROUCH = key
+						Case 11
+							KEY_CHAT = key
+						Case 12
+							KEY_RELOAD = key
+						Case 13
+							KEY_TOGGLEGUN = key
+						Case 14
+							KEY_RADIOTOGGLE = key
+					End Select
+					SelectedInputBox = 0
+				EndIf
+			Case 9 ;---------------------- advanced ------------------------------------------------
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("OPTIONS"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)
+				If DrawButton(x+20*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("GRAPHICS"), False) Then MainMenuTab = 6
+				If DrawButton(x+160*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("AUDIO"), False) Then MainMenuTab = 7
+				If DrawButton(x+300*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("CONTROLS"), False) Then MainMenuTab = 8
+				If DrawButton(x+440*MenuScale,y+15*MenuScale,width/5,height/2, Lang_Replace("ADVANCED"), False) Then MainMenuTab = 9
+				Color 0,255,0
+				Rect x+440*MenuScale,y+15*MenuScale,width/5,height/2,False
+				SetFont Font1
+				
+				y = y + 70 * MenuScale
+				height = 220 * MenuScale
+				DrawFrame(x, y, width, height)	
+				
+				y = y + 20*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Disable console auto-opening:"))
+				NTF_DisableConsoleOpening = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_DisableConsoleOpening)
+				
+				y = y + 30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Enable achievement popup:"))
+				AchvMSGenabled% = DrawTick(x + 310 * MenuScale, y + MenuScale, AchvMSGenabled%)
+				
+				y = y + 30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Show FPS:"))
+				ShowFPS% = DrawTick(x + 310 * MenuScale, y + MenuScale, ShowFPS%)
+				
+				y = y + 30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, Lang_Replace("Selected language:"))
+				Text (x + 340 * MenuScale, y, LANG_Name$(SelectedLang%))
+				DrawImage ArrowIMG(2),x + 310 * MenuScale, y-4*MenuScale
+				If MouseHit1
+					If ImageRectOverlap(ArrowIMG(2),x + 310 * MenuScale, y-4*MenuScale, MouseX(),MouseY(),0,0)
+						MainMenuTab = 11
+						PlaySound(ButtonSFX)
+					EndIf
+				EndIf
+			Case 11 ;---------------------- language selection ------------------------------------------------
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, Lang_Replace("LANGUAGES"), True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 480 * MenuScale
+				
+				DrawFrame(x, y, width, height)
+				
+				y = y + 20 * MenuScale
+				
+				width = 520 * MenuScale
+				height = 92 * MenuScale
+				x = 315 * MenuScale
+				
+				For i = 0 To LanguageAmount%
+					If LANG$(i) <> SelectedLangString$
+						Color 255,255,255
+					Else
+						Color 0,255,0
+					EndIf
+					SetFont Font5%
+					Text x,y,LANG_Name$(i),1,1
+					
+					If RectsOverlap(x-125*MenuScale,y-10*MenuScale,250*MenuScale,24*MenuScale,MouseX(),MouseY(),0,0)
+						Color 255,255,255
+						Rect(x-125*MenuScale,y-10*MenuScale,250*MenuScale,24*MenuScale,False)
+					EndIf
+					
+					If MouseHit1
+						If RectsOverlap(x-125*MenuScale,y-10*MenuScale,250*MenuScale,24*MenuScale,MouseX(),MouseY(),0,0)
+							If LANG$(i) <> SelectedLangString$
+								Lang_Change(i)
+							EndIf
+							PlaySound(ButtonSFX)
+						EndIf
+					EndIf
+					
+					y=y+25*MenuScale
+					If y >= 845 Then y = (286 + 110)*MenuScale : x=x+200*MenuScale
+				Next
+			Case 5
+				
+				x = 159 * MenuScale
+				y = 286 * MenuScale
+				
+				width = 400 * MenuScale
+				height = 70 * MenuScale
+				
+				Color(255, 255, 255)
+				SetFont Font2
+				Text(x + width / 2, y + height / 2, "OPTIONS - NTF", True, True)
+				
+				x = 160 * MenuScale
+				y = y + height + 20 * MenuScale
+				width = 580 * MenuScale
+				height = 130 * MenuScale
+				DrawFrame(x, y, width, height)
+				SetFont Font1
+				
+				;---------------------- graphics ------------------------------------------------
+				
+				y=y+20*MenuScale
+				
+				;Local prevGamma# = ScreenGamma
+				;ScreenGamma = (SlideBar(x + 310*MenuScale, y+6*MenuScale, 150*MenuScale, ScreenGamma*50.0)/50.0)
+				;Color 255,255,255
+				;Text (x + 20 * MenuScale, y, "Screen gamma")
+				;Text (x + 20 * MenuScale, y + 15 * MenuScale, "(fullscreen mode only)")
+				
+				;If prevGamma<>ScreenGamma Then
+				;	UpdateScreenGamma()
+				;EndIf
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, "Disable Aim Cross:")
+				NTF_DisableAimCross = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_DisableAimCross%)
+				
+				y=y+40*MenuScale
+				
+				;Color 255,255,255				
+				;Text (x + 20 * MenuScale, y, "Enable HUD:")	
+				;HUDenabled = DrawTick(x + 310 * MenuScale, y + MenuScale, HUDenabled)	
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, "Texture Details:")
+				;NTF_LODMode% = (SlideBar(x + 310 * MenuScale, y-4*MenuScale, 150*MenuScale, NTF_LODMode%)/100.0)
+				DrawImage ArrowIMG(1),x + 310 * MenuScale, y-4*MenuScale
+				If MouseHit1
+					If ImageRectOverlap(ArrowIMG(1),x + 310 * MenuScale, y-4*MenuScale, MouseX(),MouseY(),0,0)
+						If NTF_LODMode% < 3
+							NTF_LODMode% = NTF_LODMode% + 1
+						Else
+							NTF_LODMode% = 0
+						EndIf
+						PlaySound(ButtonSFX)
+					EndIf
+				EndIf
+				Color 255,255,255
+				Select NTF_LODMode%
+					Case 0
+						Text (x + 340 * MenuScale, y + MenuScale, "Low")
+						NTF_LODValue# = 1.5
+					Case 1
+						Text (x + 340 * MenuScale, y + MenuScale, "Medium")
+						NTF_LODValue# = 0.75
+					Case 2
+						Text (x + 340 * MenuScale, y + MenuScale, "High")
+						NTF_LODValue# = 0.0
+					Case 3
+						Text (x + 340 * MenuScale, y + MenuScale, "Very High")
+						NTF_LODValue# = -0.75
+				End Select
+				
+				y=y+30*MenuScale
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, "Seperate Zone Loading:")
+				NTF_ZoneLoading = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_ZoneLoading)
+				
+				;Color 255,255,255				
+				;Text (x + 20 * MenuScale, y, "Enable bump mapping:")	
+				;BumpEnabled = DrawTick(x + 310 * MenuScale, y + MenuScale, BumpEnabled)	
+				
+				;---------------------- console ------------------------------------------------
+				
+				y = y + 50 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)	
+				
+				y = y + 20*MenuScale
+				
+				;MusicVolume = (SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, MusicVolume*100.0)/100.0)
+				;Color 255,255,255
+				;Text (x + 20 * MenuScale, y, "Music volume:")	
+				
+				Color 255,255,255
+				Text (x + 20 * MenuScale, y, "Disable Console Auto-Opening:")
+				NTF_DisableConsoleOpening = DrawTick(x + 310 * MenuScale, y + MenuScale, NTF_DisableConsoleOpening)
+				
+				;---------------------- controls ------------------------------------------------
+				
+				y = y + 50 * MenuScale
+				height = 220 * MenuScale
+				DrawFrame(x, y, width, height)	
+				
+				y = y + 20*MenuScale
+				
+				;y = y + 30*MenuScale
+				Text (x + 20 * MenuScale, y, "Control configuration:")	
+				y = y + 10*MenuScale
+				
+				Text (x + 20 * MenuScale, y + 20 * MenuScale, "Reload")
+				InputBox(x + 170 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RELOAD,210)),5)		
+				Text (x + 20 * MenuScale, y + 40 * MenuScale, "Use Chat")
+				InputBox(x + 170 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_CHAT,210)),3)	
+				Text (x + 20 * MenuScale, y + 60 * MenuScale, "Toggle Guns")
+				InputBox(x + 170 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_TOGGLEGUN,210)),6)				
+				;Text (x + 20 * MenuScale, y + 80 * MenuScale, "Right")
+				;InputBox(x + 170 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RIGHT,210)),4)	
+				
+				;Text (x + 300 * MenuScale, y + 20 * MenuScale, "Blink")
+				;InputBox(x + 450 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_BLINK,210)),7)				
+				;Text (x + 300 * MenuScale, y + 40 * MenuScale, "Sprint")
+				;InputBox(x + 450 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_SPRINT,210)),8)
+				;Text (x + 300 * MenuScale, y + 60 * MenuScale, "Inventory")
+				;InputBox(x + 450 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_INV,210)),9)
+				;Text (x + 300 * MenuScale, y + 80 * MenuScale, "Crouch")
+				;InputBox(x + 450 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_CROUCH,210)),10)
+				
+				For i = 0 To 227
+					If KeyHit(i) Then key = i : Exit
+				Next
+				If key<>0 Then
+					Select SelectedInputBox
+						Case 3
+							KEY_CHAT = key
+				;		Case 4
+				;			KEY_RIGHT = key
+						Case 5
+							KEY_RELOAD = key
+						Case 6
+							KEY_TOGGLEGUN = key
+				;		Case 7
+				;			KEY_BLINK = key
+				;		Case 8
+				;			KEY_SPRINT = key
+				;		Case 9
+				;			KEY_INV = key
+				;		Case 10
+				;			KEY_CROUCH = key
+					End Select
+					SelectedInputBox = 0
+				EndIf 
+				
+				;MouseSens = (SlideBar(x + 310*MenuScale, y-4*MenuScale, 150*MenuScale, (MouseSens+0.5)*100.0)/100.0)-0.5
+				;Color(255, 255, 255)
+				;Text (x + 20 * MenuScale, y, "Mouse sensitivity:")				
+				
+				y = y + 30*MenuScale
+				
+				;Color(255, 255, 255)
+				;Text (x + 20 * MenuScale, y, "Invert mouse Y-axis:")
+				;InvertMouse = DrawTick(x + 310 * MenuScale, y + MenuScale, InvertMouse)
+				
+				;y = y + 30*MenuScale
+				;Text (x + 20 * MenuScale, y, "Control configuration:")	
+				;y = y + 10*MenuScale
+				
+				;Text (x + 20 * MenuScale, y + 20 * MenuScale, "Up")
+				;InputBox(x + 170 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_UP,210)),5)		
+				;Text (x + 20 * MenuScale, y + 40 * MenuScale, "Left")
+				;InputBox(x + 170 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_LEFT,210)),3)	
+				;Text (x + 20 * MenuScale, y + 60 * MenuScale, "Down")
+				;InputBox(x + 170 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_DOWN,210)),6)				
+				;Text (x + 20 * MenuScale, y + 80 * MenuScale, "Right")
+				;InputBox(x + 170 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_RIGHT,210)),4)	
+				
+				;Text (x + 300 * MenuScale, y + 20 * MenuScale, "Blink")
+				;InputBox(x + 450 * MenuScale, y + 20 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_BLINK,210)),7)				
+				;Text (x + 300 * MenuScale, y + 40 * MenuScale, "Sprint")
+				;InputBox(x + 450 * MenuScale, y + 40 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_SPRINT,210)),8)
+				;Text (x + 300 * MenuScale, y + 60 * MenuScale, "Inventory")
+				;InputBox(x + 450 * MenuScale, y + 60 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_INV,210)),9)
+				;Text (x + 300 * MenuScale, y + 80 * MenuScale, "Crouch")
+				;InputBox(x + 450 * MenuScale, y + 80 * MenuScale,100*MenuScale,20*MenuScale,KeyName(Min(KEY_CROUCH,210)),10)
+				
+				;For i = 0 To 227
+				;	If KeyHit(i) Then key = i : Exit
+				;Next
+				;If key<>0 Then
+				;	Select SelectedInputBox
+				;		Case 3
+				;			KEY_LEFT = key
+				;		Case 4
+				;			KEY_RIGHT = key
+				;		Case 5
+				;			KEY_UP = key
+				;		Case 6
+				;			KEY_DOWN = key
+				;		Case 7
+				;			KEY_BLINK = key
+				;		Case 8
+				;			KEY_SPRINT = key
+				;		Case 9
+				;			KEY_INV = key
+				;		Case 10
+				;			KEY_CROUCH = key
+				;	End Select
+				;	SelectedInputBox = 0
+				;EndIf 
 			Case 1 ; New game
 				
 				x = 159 * MenuScale
@@ -314,7 +1025,7 @@ Function UpdateMainMenu()
 				
 				Color(255, 255, 255)
 				SetFont Font2
-				Text(x + width / 2, y + height / 2, "NEW GAME", True, True)
+				Text(x + width / 2, y + height / 2, Lang_Replace("NEW GAME"), True, True)
 				
 				x = 160 * MenuScale
 				y = y + height + 20 * MenuScale
@@ -325,16 +1036,16 @@ Function UpdateMainMenu()
 				
 				SetFont Font1
 				
-				Text (x + 20 * MenuScale, y + 20 * MenuScale, "Name:")
+				Text (x + 20 * MenuScale, y + 20 * MenuScale, Lang_Replace("Name:"))
 				CurrSave = InputBox(x + 150 * MenuScale, y + 15 * MenuScale, 200 * MenuScale, 30 * MenuScale, CurrSave, 1)
 				CurrSave = Left(CurrSave, 15)
 				
 				Color 255,255,255
 				If SelectedMap = "" Then
-					Text (x + 20 * MenuScale, y + 60 * MenuScale, "Map seed:")
+					Text (x + 20 * MenuScale, y + 60 * MenuScale, Lang_Replace("Map seed:"))
 					RandomSeed = Left(InputBox(x+150*MenuScale, y+55*MenuScale, 200*MenuScale, 30*MenuScale, RandomSeed, 3),15)	
 				Else
-					Text (x + 20 * MenuScale, y + 60 * MenuScale, "Selected map:")
+					Text (x + 20 * MenuScale, y + 60 * MenuScale, Lang_Replace("Selected map:"))
 					Color (255, 255, 255)
 					Rect(x+150*MenuScale, y+55*MenuScale, 200*MenuScale, 30*MenuScale)
 					Color (0, 0, 0)
@@ -343,16 +1054,16 @@ Function UpdateMainMenu()
 					Color (255, 0,0)
 					Text(x+150*MenuScale + 100*MenuScale, y+55*MenuScale + 15*MenuScale, SelectedMap, True, True)
 					
-					If DrawButton(x+370*MenuScale, y+55*MenuScale, 120*MenuScale, 30*MenuScale, "Deselect", False) Then
+					If DrawButton(x+370*MenuScale, y+55*MenuScale, 120*MenuScale, 30*MenuScale, Lang_Replace("Deselect"), False) Then
 						SelectedMap=""
 					EndIf
 				EndIf	
 				
-				Text(x + 20 * MenuScale, y + 110 * MenuScale, "Enable intro sequence:")
+				Text(x + 20 * MenuScale, y + 110 * MenuScale, Lang_Replace("Enable intro sequence:"))
 				IntroEnabled = DrawTick(x + 280 * MenuScale, y + 110 * MenuScale, IntroEnabled)	
 				
 				;Local modeName$, modeDescription$, selectedDescription$
-				Text (x + 20 * MenuScale, y + 150 * MenuScale, "Difficulty:")				
+				Text (x + 20 * MenuScale, y + 150 * MenuScale, Lang_Replace("Difficulty:"))
 				For i = SAFE To CUSTOM
 					If DrawTick(x + 20 * MenuScale, y + (180+30*i) * MenuScale, (SelectedDifficulty = difficulties(i))) Then SelectedDifficulty = difficulties(i)
 					
@@ -364,7 +1075,7 @@ Function UpdateMainMenu()
 				
 				If SelectedDifficulty\customizable Then
 					SelectedDifficulty\permaDeath =  DrawTick(x + 160 * MenuScale, y + 165 * MenuScale, (SelectedDifficulty\permaDeath))
-					Text(x + 200 * MenuScale, y + 165 * MenuScale, "Permadeath")
+					Text(x + 200 * MenuScale, y + 165 * MenuScale, Lang_Replace("Permadeath"))
 					
 					If DrawTick(x + 160 * MenuScale, y + 195 * MenuScale, SelectedDifficulty\saveType = SAVEANYWHERE And (Not SelectedDifficulty\permaDeath), SelectedDifficulty\permaDeath) Then 
 						SelectedDifficulty\saveType = SAVEANYWHERE
@@ -372,23 +1083,23 @@ Function UpdateMainMenu()
 						SelectedDifficulty\saveType = SAVEONSCREENS
 					EndIf
 					
-					Text(x + 200 * MenuScale, y + 195 * MenuScale, "Save anywhere")	
+					Text(x + 200 * MenuScale, y + 195 * MenuScale, Lang_Replace("Save anywhere"))	
 					
 					SelectedDifficulty\aggressiveNPCs =  DrawTick(x + 160 * MenuScale, y + 225 * MenuScale, SelectedDifficulty\aggressiveNPCs)
-					Text(x + 200 * MenuScale, y + 225 * MenuScale, "Aggressive NPCs")
+					Text(x + 200 * MenuScale, y + 225 * MenuScale, Lang_Replace("Aggressive NPCs"))
 					
 				Else
 					RowText(SelectedDifficulty\description, x+160*MenuScale, y+160*MenuScale, (410-20)*MenuScale, 200)					
 				EndIf
 				
-				If DrawButton(x, y + height + 20 * MenuScale, 160 * MenuScale, 70 * MenuScale, "Load map", False) Then
+				If DrawButton(x, y + height + 20 * MenuScale, 160 * MenuScale, 70 * MenuScale, Lang_Replace("Load map"), False) Then
 					MainMenuTab = 4
 					LoadSavedMaps()
 				EndIf
 				
 				SetFont Font2
 				
-				If DrawButton(x + 420 * MenuScale, y + height + 20 * MenuScale, 160 * MenuScale, 70 * MenuScale, "START", False) Then
+				If DrawButton(x + 420 * MenuScale, y + height + 20 * MenuScale, 160 * MenuScale, 70 * MenuScale, Lang_Replace("START"), False) Then
 					If CurrSave <> "" Then
 						If RandomSeed = "" Then
 							RandomSeed = Abs(MilliSecs())
@@ -433,7 +1144,7 @@ Function UpdateMainMenu()
 				
 				Color(255, 255, 255)
 				SetFont Font2
-				Text(x + width / 2, y + height / 2, "LOAD GAME", True, True)
+				Text(x + width / 2, y + height / 2, Lang_Replace("LOAD GAME"), True, True)
 				
 				x = 160 * MenuScale
 				y = y + height + 20 * MenuScale
@@ -443,7 +1154,7 @@ Function UpdateMainMenu()
 				SetFont Font1	
 				
 				If SaveGameAmount = 0 Then
-					Text (x + 20 * MenuScale, y + 20 * MenuScale, "No saved games")
+					Text (x + 20 * MenuScale, y + 20 * MenuScale, Lang_Replace("No saved games"))
 				Else
 					x = x + 20 * MenuScale
 					y = y + 20 * MenuScale
@@ -454,7 +1165,7 @@ Function UpdateMainMenu()
 						Text(x + 20 * MenuScale, y + (10+23) * MenuScale, SaveGameTime(i - 1))
 						Text(x + 120 * MenuScale, y + (10+23) * MenuScale, SaveGameDate(i - 1))
 						
-						If DrawButton(x + 280 * MenuScale, y + 20 * MenuScale, 100 * MenuScale, 30 * MenuScale, "Load", False) Then
+						If DrawButton(x + 280 * MenuScale, y + 20 * MenuScale, 100 * MenuScale, 30 * MenuScale, Lang_Replace("Load"), False) Then
 							LoadEntities()
 							LoadGame(SavePath + SaveGames(i - 1) + "\")
 							CurrSave = SaveGames(i - 1)
@@ -462,8 +1173,11 @@ Function UpdateMainMenu()
 							MainMenuOpen = False
 						EndIf
 						
-						If DrawButton(x + 400 * MenuScale, y + 20 * MenuScale, 100 * MenuScale, 30 * MenuScale, "Delete", False) Then
+						If DrawButton(x + 400 * MenuScale, y + 20 * MenuScale, 100 * MenuScale, 30 * MenuScale, Lang_Replace("Delete"), False) Then
 							DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\save.txt")
+							DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z1.SZL")
+							DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z2.SZL")
+							DeleteFile(CurrentDir()+SavePath + SaveGames(i - 1)+"\_z3.SZL")
 							DeleteDir(CurrentDir()+SavePath + SaveGames(i - 1))
 							LoadSaveGames()
 							Exit
@@ -496,7 +1210,8 @@ Function UpdateMainMenu()
 				
 				y=y+20*MenuScale
 				
-				Local prevGamma# = ScreenGamma
+				;Local prevGamma# = ScreenGamma
+				prevGamma# = ScreenGamma
 				ScreenGamma = (SlideBar(x + 310*MenuScale, y+6*MenuScale, 150*MenuScale, ScreenGamma*50.0)/50.0)
 				Color 255,255,255
 				Text (x + 20 * MenuScale, y, "Screen gamma")
@@ -594,6 +1309,16 @@ Function UpdateMainMenu()
 					End Select
 					SelectedInputBox = 0
 				EndIf
+				
+				y = y + 140 * MenuScale
+				height = 60 * MenuScale
+				DrawFrame(x, y, width, height)
+				
+				y = y + 15 * MenuScale
+				
+				If DrawButton(x + 20 * MenuScale, y , 200 * MenuScale, 30 * MenuScale, "NTF-Mod Options", False)
+					MainMenuTab = 5
+				EndIf
 			Case 4 ; load map
 				y = y + height + 20 * MenuScale
 				width = 580 * MenuScale
@@ -609,7 +1334,7 @@ Function UpdateMainMenu()
 				
 				Color(255, 255, 255)
 				SetFont Font2
-				Text(x + width / 2, y + height / 2, "LOAD MAP", True, True)
+				Text(x + width / 2, y + height / 2, Lang_Replace("LOAD MAP"), True, True)
 				SetFont Font1
 				
 				x = 160 * MenuScale
@@ -620,7 +1345,7 @@ Function UpdateMainMenu()
 				SetFont Font1
 				
 				If SavedMaps(0)="" Then 
-					Text (x + 20 * MenuScale, y + 20 * MenuScale, "No saved maps. Use the Map Creator to create new maps.")
+					Text (x + 20 * MenuScale, y + 20 * MenuScale, Lang_Replace("No saved maps. Use the Map Creator to create new maps."))
 				Else
 					x = x + 20 * MenuScale
 					y = y + 20 * MenuScale
@@ -668,7 +1393,7 @@ Function UpdateLauncher()
 	MenuWhite = LoadImage_Strict("GFX\menu\menuwhite.jpg")
 	MenuBlack = LoadImage_Strict("GFX\menu\menublack.jpg")	
 	MaskImage MenuBlack, 255,255,0
-	LauncherIMG = LoadImage_Strict("GFX\menu\launcher.jpg")
+	LauncherIMG = LoadImage_Strict("NineTailedFoxMod\GFX\menu\launcher.jpg")
 	ButtonSFX% = LoadSound_Strict("SFX\Button.ogg")
 	Local i%	
 	
@@ -993,13 +1718,13 @@ Function DrawLoading(percent%, shortloading=False)
 		EndIf
 		
 		Color 0,0,0
-		Text(GraphicWidth / 2 + 1, GraphicHeight / 2 - 100 + 1, "LOADING - " + percent + " %", True, True)
+		Text(GraphicWidth / 2 + 1, GraphicHeight / 2 - 100 + 1, Lang_Replace("LOADING")+ " - " + percent + " %", True, True)
 		Color 255,255,255
-		Text(GraphicWidth / 2, GraphicHeight / 2 - 100, "LOADING - " + percent + " %", True, True)
+		Text(GraphicWidth / 2, GraphicHeight / 2 - 100, Lang_Replace("LOADING")+ " - " + percent + " %", True, True)
 		
 		If percent = 100 Then 
 			If firstloop And SelectedLoadingScreen\title <> "CWM" Then PlaySound HorrorSFX(8)
-			Text(GraphicWidth / 2, GraphicHeight - 50, "PRESS ANY KEY", True, True)
+			Text(GraphicWidth / 2, GraphicHeight - 50, Lang_Replace("PRESS ANY KEY"), True, True)
 		Else
 			FlushKeys()
 			FlushMouse()
@@ -1136,8 +1861,8 @@ Function SlideBar#(x%, y%, width%, value#)
 	DrawImage(BlinkMeterIMG, x + width * value / 100.0 +3, y+3)
 	
 	Color 170,170,170 
-	Text (x - 50 * MenuScale, y + 4*MenuScale, "LOW")					
-	Text (x + width + 38 * MenuScale, y+4*MenuScale, "HIGH")	
+	Text (x - 50 * MenuScale, y + 4*MenuScale, Lang_Replace("LOW"))					
+	Text (x + width + 38 * MenuScale, y+4*MenuScale, Lang_Replace("HIGH"))	
 	
 	Return value
 	

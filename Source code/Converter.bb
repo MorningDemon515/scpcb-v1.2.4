@@ -542,11 +542,11 @@ Local ic.INIConvert
 
 If state=1 Then ;convert B3D to Rmesh
 	
-	If FileSize("Data\rooms_b3d.ini")=0 Then
-		CopyFile "Data\rooms.ini","Data\rooms_b3d.ini"
+	If FileSize("NineTailedFoxMod\Data\rooms_to_convert_old.ini")=0 Then
+		CopyFile "NineTailedFoxMod\Data\rooms_to_convert.ini","NineTailedFoxMod\Data\rooms_to_convert_old.ini"
 	EndIf
 	
-	f%=ReadFile("Data\rooms.ini")
+	f%=ReadFile("NineTailedFoxMod\Data\rooms_to_convert.ini")
 	
 	While Not Eof(f)
 		TemporaryString = Trim(ReadLine(f))
@@ -554,7 +554,7 @@ If state=1 Then ;convert B3D to Rmesh
 			TemporaryString = Mid(TemporaryString, 2, Len(TemporaryString) - 2)
 			
 			If TemporaryString <> "room ambience" Then
-				Stri=GetINIString("Data\rooms.ini",TemporaryString,"mesh path")
+				Stri=GetINIString("NineTailedFoxMod\Data\rooms_to_convert.ini",TemporaryString,"mesh path")
 				
 				mesh=LoadAnimMesh(Stri)
 				SaveRoomMesh(mesh,Replace(Stri,".b3d",".rmesh"))
@@ -564,10 +564,10 @@ If state=1 Then ;convert B3D to Rmesh
 				Flip
 				
 				ic.INIConvert=New INIConvert
-				ic\file="Data\rooms.ini"
+				ic\file="NineTailedFoxMod\Data\rooms_to_convert.ini"
 				ic\section=TemporaryString
 				ic\key="mesh path"
-				ic\value=Replace(Stri,".b3d",".rmesh")
+				ic\value=Replace(Stri,".b3d",".b3d")
 				
 				;PutINIValue("Data\rooms.ini",TemporaryString,"mesh path",Replace(Stri,".b3d",".rmesh"))
 			EndIf
@@ -586,7 +586,7 @@ If state=1 Then ;convert B3D to Rmesh
 	CloseFile f
 	
 Else If state=2
-	f%=ReadFile("Data\rooms.ini")
+	f%=ReadFile("NineTailedFoxMod\Data\rooms_to_convert.ini")
 	
 	While Not Eof(f)
 		TemporaryString = Trim(ReadLine(f))
@@ -594,10 +594,10 @@ Else If state=2
 			TemporaryString = Mid(TemporaryString, 2, Len(TemporaryString) - 2)
 			
 			If TemporaryString <> "room ambience" Then
-				Stri=GetINIString("Data\rooms.ini",TemporaryString,"mesh path")
+				Stri=GetINIString("NineTailedFoxMod\Data\rooms_to_convert.ini",TemporaryString,"mesh path")
 				
 				ic.INIConvert=New INIConvert
-				ic\file="Data\rooms.ini"
+				ic\file="NineTailedFoxMod\Data\rooms_to_convert.ini"
 				ic\section=TemporaryString
 				ic\key="mesh path"
 				ic\value=Replace(Stri,".rmesh",".b3d")

@@ -119,17 +119,31 @@ End Function
 Function InitItemTemplates()
 	Local it.ItemTemplates,it2.ItemTemplates
 	
+	CreateItemTemplate("USP Tactical", "usp", "NineTailedFoxMod\GFX\items\USP_Tactical_Worldmodel.b3d", "NineTailedFoxMod\GFX\items\INVusp.jpg", "", 0.02)
+	CreateItemTemplate("FN P90", "p90", "NineTailedFoxMod\GFX\items\P90_Worldmodel.b3d", "NineTailedFoxMod\GFX\items\INVp90.jpg", "", 0.02)
+	CreateItemTemplate("Crowbar", "crowbar", "NineTailedFoxMod\GFX\items\Crowbar_Worldmodel.b3d", "NineTailedFoxMod\GFX\items\INVfreezer.jpg", "", 0.03)
+	CreateItemTemplate("M9 Beretta", "m9", "NineTailedFoxMod\GFX\items\M9_Beretta_Worldmodel.b3d", "NineTailedFoxMod\GFX\items\INVfreezer.jpg", "", 0.02)
+	it = CreateItemTemplate("Document SCP-457 Page 1/2","paper","GFX\items\paper.x","GFX\items\INVpaper.jpg","NineTailedFoxMod\GFX\items\doc457_1.jpg", 0.003) : it\sound = 0
+	it = CreateItemTemplate("Document SCP-457 Page 2/2","paper","GFX\items\paper.x","GFX\items\INVpaper.jpg","NineTailedFoxMod\GFX\items\doc457_2.jpg", 0.003) : it\sound = 0
+	it = CreateItemTemplate("SCP-1499","scp1499","NineTailedFoxMod\GFX\items\SCP-1499 from Fan-Breach.3ds","NineTailedFoxMod\GFX\items\INVscp1499.jpg", "", 0.023,"NineTailedFoxMod\GFX\items\SCP-1499.jpg")
+	it\sound = 2
+	CreateItemTemplate("SCP-198","scp198","NineTailedFoxMod\GFX\items\scp198.b3d","NineTailedFoxMod\GFX\items\INVscp198.jpg","",0.04)
+	CreateItemTemplate("SCP-109","scp109","NineTailedFoxMod\GFX\items\scp109.b3d","NineTailedFoxMod\GFX\items\INVscp109.jpg","",0.0009)
+	it = CreateItemTemplate("Document SCP-109", "paper", "GFX\items\paper.x", "GFX\items\INVpaper.jpg", "NineTailedFoxMod\GFX\items\doc109.jpg", 0.003) : it\sound = 0
+	it = CreateItemTemplate("Document SCP-1162", "paper", "GFX\items\paper.x", "GFX\items\INVpaper.jpg", "NineTailedFoxMod\GFX\items\doc1162.jpg", 0.003) : it\sound = 0
+	
+	
 	it = CreateItemTemplate("Some SCP-420-J", "420", "GFX\items\420.x", "GFX\items\INV420.jpg", "", 0.0005)
 	it\sound = 2
 	
-	CreateItemTemplate("Level 1 Key Card", "key1",  "GFX\items\keycard.x", "GFX\items\INVkey1.jpg", "", 0.0004,"GFX\items\keycard1.jpg")
-	CreateItemTemplate("Level 2 Key Card", "key2",  "GFX\items\keycard.x", "GFX\items\INVkey2.jpg", "", 0.0004,"GFX\items\keycard2.jpg")
-	CreateItemTemplate("Level 3 Key Card", "key3",  "GFX\items\keycard.x", "GFX\items\INVkey3.jpg", "", 0.0004,"GFX\items\keycard3.jpg")
-	CreateItemTemplate("Level 4 Key Card", "key4",  "GFX\items\keycard.x", "GFX\items\INVkey4.jpg", "", 0.0004,"GFX\items\keycard4.jpg")
-	CreateItemTemplate("Level 5 Key Card", "key5", "GFX\items\keycard.x", "GFX\items\INVkey5.jpg", "", 0.0004,"GFX\items\keycard5.jpg")
+	CreateItemTemplate("Level 1 Key Card", "key1",  "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkey1.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycard1.jpg")
+	CreateItemTemplate("Level 2 Key Card", "key2",  "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkey2.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycard2.jpg")
+	CreateItemTemplate("Level 3 Key Card", "key3",  "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkey3.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycard3.jpg")
+	CreateItemTemplate("Level 4 Key Card", "key4",  "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkey4.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycard4.jpg")
+	CreateItemTemplate("Level 5 Key Card", "key5", "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkey5.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycard5.jpg")
 	CreateItemTemplate("Playing Card", "misc", "GFX\items\keycard.x", "GFX\items\INVcard.jpg", "", 0.0004,"GFX\items\card.jpg")
 	CreateItemTemplate("Mastercard", "misc", "GFX\items\keycard.x", "GFX\items\INVmastercard.jpg", "", 0.0004,"GFX\items\mastercard.jpg")
-	CreateItemTemplate("Key Card Omni", "key6", "GFX\items\keycard.x", "GFX\items\INVkeyomni.jpg", "", 0.0004,"GFX\items\keycardomni.jpg")
+	CreateItemTemplate("Key Card Omni", "key6", "GFX\items\keycard.x", "NineTailedFoxMod\GFX\items\INVkeyomni.jpg", "", 0.0004,"NineTailedFoxMod\GFX\items\keycardomni.jpg")
 	
 	it = CreateItemTemplate("SCP-860", "scp860", "GFX\items\key.b3d", "GFX\items\INVkey.jpg", "", 0.001)
 	it\sound = 3
@@ -482,7 +496,7 @@ Function UpdateItems()
 	
 End Function
 
-Function PickItem(item.Items)
+Function PickItem(item.Items,soundplay%=True)
 	Local n% = 0
 	
 	If ItemAmount < MaxItemAmount Then
@@ -511,7 +525,7 @@ Function PickItem(item.Items)
 						ShowEntity Light
 						LightFlash = 1.0
 						PlaySound(IntroSFX(11))
-						DeathMSG = "Subject D-9431 found dead inside SCP-914's output booth next to what appears to be an ordinary 9V battery. The subject is covered in severe "
+						DeathMSG = "MTF Unit [Redacted] found dead inside SCP-914's output booth next to what appears to be an ordinary 9V battery. The subject is covered in severe "
 						DeathMSG = DeathMSG + "electrical burns, and assumed to be killed by an electrical shock caused by the battery. The battery has been stored for further study."
 						Kill()
 					Case "scp148"
@@ -530,9 +544,17 @@ Function PickItem(item.Items)
 						item\state = 0
 					Case "navigator", "nav"
 						If item\itemtemplate\name = "S-NAV Navigator Ultimate" Then GiveAchievement(AchvSNAV)
+					Case "scp198"
+						Msg = "You feel slight pain and SCP-198 is now attached at you"
+						MsgTimer = 70*6
+						PlaySound LoadTempSound("NineTailedFoxMod\SFX\sfx_oneshot_wipe.ogg")
+						LightFlash = 2.5
+						Injuries = Injuries + 0.5
 				End Select
 				
-				If item\itemtemplate\sound <> 66 Then PlaySound(PickSFX(item\itemtemplate\sound))
+				If soundplay%
+					If item\itemtemplate\sound <> 66 Then PlaySound(PickSFX(item\itemtemplate\sound))
+				EndIf
 				item\Picked = True
 				item\Dropped = -1
 				
@@ -550,6 +572,7 @@ Function PickItem(item.Items)
 End Function
 
 Function DropItem(item.Items)
+	
 	If item\itemtemplate\sound <> 66 Then PlaySound(PickSFX(item\itemtemplate\sound))
 	
 	item\Dropped = 1

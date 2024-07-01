@@ -1,6 +1,7 @@
 ;achievement menu & messages by InnocentSam
 
-Const MAXACHIEVEMENTS=34
+;Const MAXACHIEVEMENTS=34
+Const MAXACHIEVEMENTS=42
 Dim Achievements%(MAXACHIEVEMENTS)
 
 Const Achv008%=0, Achv012%=1, Achv035%=2, Achv049%=3, Achv055=4,  Achv079%=5, Achv096%=6, Achv106%=7, Achv148%=8, Achv178=9, Achv205=10
@@ -16,15 +17,28 @@ Global AchvMSGenabled% = GetINIInt("options.ini", "options", "achievement popup 
 Dim AchievementStrings$(MAXACHIEVEMENTS)
 Dim AchievementDescs$(MAXACHIEVEMENTS)
 Dim AchvIMG%(MAXACHIEVEMENTS)
+Dim AchvProgress%(MAXACHIEVEMENTS)
 For i = 0 To MAXACHIEVEMENTS-1
-	Local loc2% = GetINISectionLocation("Data\achievementstrings.ini", "s"+Str(i))
-	AchievementStrings(i) = GetINIString2("Data\achievementstrings.ini", loc2, "string1")
-	AchievementDescs(i) = GetINIString2("Data\achievementstrings.ini", loc2, "AchvDesc")
-	
-	Local image$ = GetINIString2("Data\achievementstrings.ini", loc2, "image") 
-	
-	AchvIMG(i) = LoadImage_Strict("GFX\menu\achievements\"+image+".jpg")
-	AchvIMG(i) = ResizeImage2(AchvIMG(i),ImageWidth(AchvIMG(i))*GraphicHeight/768.0,ImageHeight(AchvIMG(i))*GraphicHeight/768.0)
+	Local loc2%, image$
+	If i < 35
+		loc2% = GetINISectionLocation("Data\achievementstrings.ini", "s"+Str(i))
+		AchievementStrings(i) = GetINIString2("Data\achievementstrings.ini", loc2, "string1")
+		AchievementDescs(i) = GetINIString2("Data\achievementstrings.ini", loc2, "AchvDesc")
+		
+		image$ = GetINIString2("Data\achievementstrings.ini", loc2, "image") 
+		
+		AchvIMG(i) = LoadImage_Strict("GFX\menu\achievements\"+image+".jpg")
+		AchvIMG(i) = ResizeImage2(AchvIMG(i),ImageWidth(AchvIMG(i))*GraphicHeight/768.0,ImageHeight(AchvIMG(i))*GraphicHeight/768.0)
+	Else
+		loc2% = GetINISectionLocation("NineTailedFoxMod\Data\achievementstrings.ini", "s"+Str(i))
+		AchievementStrings(i) = GetINIString2("NineTailedFoxMod\Data\achievementstrings.ini", loc2, "string1")
+		AchievementDescs(i) = GetINIString2("NineTailedFoxMod\Data\achievementstrings.ini", loc2, "AchvDesc")
+		
+		image$ = GetINIString2("NineTailedFoxMod\Data\achievementstrings.ini", loc2, "image") 
+		
+		AchvIMG(i) = LoadImage_Strict("NineTailedFoxMod\GFX\menu\achievements\"+image+".jpg")
+		AchvIMG(i) = ResizeImage2(AchvIMG(i),ImageWidth(AchvIMG(i))*GraphicHeight/768.0,ImageHeight(AchvIMG(i))*GraphicHeight/768.0)
+	EndIf
 Next
 
 Global AchvLocked = LoadImage_Strict("GFX\menu\achievements\achvlocked.jpg")
@@ -34,10 +48,18 @@ Function GiveAchievement(achvname%, showMessage%=True)
 	If Achievements(achvname)<>True Then
 		Achievements(achvname)=True
 		If AchvMSGenabled And showMessage Then
-			Local loc2% = GetINISectionLocation("Data\achievementstrings.ini", "s"+achvname)
-			Local AchievementName$ = GetINIString2("Data\achievementstrings.ini", loc2, "string1")
-			Msg = "Achievement Unlocked - "+AchievementName
-			MsgTimer=70*7
+			Local loc2%, AchievementName$
+			If achvname% < 35
+				loc2% = GetINISectionLocation("Data\achievementstrings.ini", "s"+achvname)
+				AchievementName$ = GetINIString2("Data\achievementstrings.ini", loc2, "string1")
+				Msg = "Achievement Unlocked - "+AchievementName
+				MsgTimer=70*7
+			Else
+				loc2% = GetINISectionLocation("NineTailedFoxMod\Data\achievementstrings.ini", "s"+achvname)
+				AchievementName$ = GetINIString2("NineTailedFoxMod\Data\achievementstrings.ini", loc2, "string1")
+				Msg = "Achievement Unlocked - "+AchievementName
+				MsgTimer=70*7
+			EndIf
 		EndIf
 	EndIf
 End Function

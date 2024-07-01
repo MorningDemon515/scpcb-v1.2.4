@@ -15,11 +15,12 @@ Include "StrictLoads.bb"
 CompatData%(12, 0) ;hopefully this fixes performance issues on Windows 8
 Global OptionFile$ = "options.ini"
 
-Global Font1%, Font2%, Font3%, Font4%
+Global Font1%, Font2%, Font3%, Font4%, Font5%, Font6%
 
-Global VersionNumber$ = "1.2.4"
+;Global VersionNumber$ = "1.2"
+Global VersionNumber$ = "0.1.0"
 
-AppTitle "SCP - Containment Breach Launcher"
+AppTitle "SCP - Containment Breach - Nine Tailed Fox Mod - Launcher"
 
 Global MenuWhite%, MenuBlack%
 Global ButtonSFX%
@@ -91,8 +92,8 @@ SetBuffer BackBuffer()
 Global CurTime%, PrevTime%, LoopDelay%, FPSfactor#, FPSfactor2#
 Local CheckFPS%, ElapsedLoops%, FPS%, ElapsedTime#
 
-Local Framelimit% = GetINIInt(OptionFile, "options", "framelimit")
-Local Vsync% = GetINIInt(OptionFile, "options", "vsync")
+Global Framelimit% = GetINIInt(OptionFile, "options", "framelimit")
+Global Vsync% = GetINIInt(OptionFile, "options", "vsync")
 
 Global ScreenGamma# = GetINIFloat(OptionFile, "options", "screengamma")
 If Fullscreen Then UpdateScreenGamma()
@@ -104,7 +105,7 @@ SeedRnd MilliSecs()
 
 Global GameSaved%
 
-AppTitle "SCP - Containment Breach v"+VersionNumber
+AppTitle "SCP - Containment Breach - Nine Tailed Fox Mod v"+VersionNumber
 
 ;---------------------------------------------------------------------------------------------------------------------
 
@@ -115,11 +116,15 @@ Global CursorIMG% = LoadImage_Strict("GFX\cursor.png")
 Global SelectedLoadingScreen.LoadingScreens, LoadingScreenAmount%, LoadingScreenText%
 Global LoadingBack% = LoadImage_Strict("Loadingscreens\loadingback.jpg")
 InitLoadingScreens("Loadingscreens\loadingscreens.ini")
+InitLoadingScreens("NineTailedFoxMod\Loadingscreens\loadingscreens.ini")
 
 Font1% = LoadFont_Strict("GFX\cour.ttf", Int(18 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
-Font2% = LoadFont_Strict("GFX\courbd.ttf", Int(58 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
+;Font2% = LoadFont_Strict("GFX\courbd.ttf", Int(58 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
+Font2% = LoadFont_Strict("NineTailedFoxMod\GFX\Capture it.ttf", Int(58* (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
 Font3% = LoadFont_Strict("GFX\DS-DIGI.ttf", Int(22 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
 Font4% = LoadFont_Strict("GFX\DS-DIGI.ttf", Int(60 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
+Font5% = LoadFont_Strict("GFX\courbd.ttf", Int(22 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
+Font6% = LoadFont_Strict("GFX\cour.ttf", Int(34 * (GraphicHeight / 1024.0)), 0,0,0,0, FT_DEFAULT)
 SetFont Font2
 
 Global BlinkMeterIMG% = LoadImage_Strict("GFX\blinkmeter.jpg")
@@ -218,6 +223,10 @@ Dim DrawArrowIcon%(4)
 
 Include "Difficulty.bb"
 
+Include "lang.bb"
+
+LoadLanguages()
+
 Global MTFtimer#, MTFrooms.Rooms[10], MTFroomState%[10]
 
 Dim RadioState#(10)
@@ -228,7 +237,6 @@ Dim OldAiPics%(5)
 Global PlayTime%
 
 ;[End block]
-
 
 ;----------------------------------------------  Console -----------------------------------------------------
 
@@ -268,6 +276,145 @@ Function UpdateConsole()
 			End If
 			
 			Select Lower(StrTemp)
+				Case "ntfhelp"
+					CreateConsoleMsg("LIST OF NTF COMMANDS")
+					CreateConsoleMsg("******************************")
+					CreateConsoleMsg("- damagekevlar [damage]")
+					CreateConsoleMsg("- infinitestamina [true/false]")
+					CreateConsoleMsg("- debug [int]")
+					CreateConsoleMsg("- changezone [zone]")
+					CreateConsoleMsg("- teleport173")
+					CreateConsoleMsg("- box173")
+				Case "damagekevlar"
+					If Instr(ConsoleInput, " ")<>0 Then
+						StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
+					Else
+						StrTemp$ = ""
+					EndIf
+					
+					If Int(StrTemp$)<1 Then StrTemp$ = "1"
+					
+					If Kevlar_ExtraHealth%=0
+						Kevlar_Health% = Kevlar_Health% - Int(StrTemp$)
+						If Kevlar_Health% < 0 Then Kevlar_Health% = 0
+						
+						CreateConsoleMsg("Damaged Kevlar by: "+Int(StrTemp$))
+						CreateConsoleMsg("New Kevlar Health: "+Kevlar_Health%)
+					Else
+						Kevlar_ExtraHealth% = Kevlar_ExtraHealth% - Int(StrTemp$)
+						If Kevlar_ExtraHealth% < 0
+							Kevlar_Health% = Kevlar_Health% + Kevlar_ExtraHealth%
+							Kevlar_ExtraHealth% = 0
+						EndIf
+						CreateConsoleMsg("Damaged Kevlar by: "+Int(StrTemp$))
+						CreateConsoleMsg("New Kevlar Health: "+(Kevlar_Health%+Kevlar_ExtraHealth%))
+					EndIf
+				Case "infinitestamina"
+					StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
+					
+					Select StrTemp
+						Case "on", "1", "true"
+							NTF_InfiniteStamina% = True
+							CreateConsoleMsg("INFINITE STAMINA ON")							
+						Case "off", "0", "false"
+							NTF_InfiniteStamina% = False
+							CreateConsoleMsg("INFINITE STAMINA OFF")	
+						Default
+							NTF_InfiniteStamina% = Not NTF_InfiniteStamina%
+							If NTF_InfiniteStamina% = False Then
+								CreateConsoleMsg("INFINITE STAMINA OFF")
+							Else
+								CreateConsoleMsg("INFINITE STAMINA ON")	
+							EndIf
+					End Select
+				Case "debug"
+					If Instr(ConsoleInput, " ")<>0 Then
+						StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
+					Else
+						StrTemp$ = ""
+					EndIf
+					
+					Select Lower(StrTemp$)
+						Case 1
+							GodMode = 1
+							NoClip = 1
+							CameraFogNear = 0
+							CameraFogFar = 10000
+							Curr173\Idle = True
+							Disabled173=True
+							Curr106\Idle = True
+							Curr106\State = 200000
+							Contained106 = True
+							Brightness = 255
+							NTF_InfiniteStamina% = True
+						Case 2
+							GodMode = 1
+							NoClip = 1
+							CameraFogNear = 0
+							CameraFogFar = 10000
+							Curr173\Idle = True
+							Disabled173=True
+						Case 3
+							GodMode = 1
+							CameraFogNear = 0
+							CameraFogFar = 10000
+							Curr173\Idle = True
+							Disabled173=True
+							Curr106\Idle = True
+							Curr106\State = 200000
+							Contained106 = True
+							NTF_InfiniteStamina% = True
+							Brightness = 255
+						Case 4
+							CreateEvent("room2vent","room2vent",0)
+						Case 5
+							GodMode = 1
+							Curr173\Idle = True
+							Disabled173=True
+							Curr106\Idle = True
+							Curr106\State = 200000
+							Contained106 = True
+							NTF_InfiniteStamina% = True
+						Case 6
+							GodMode = 1
+							Curr173\Idle = True
+							Disable173=True
+							NTF_InfiniteStamina% = True
+						Case 7
+							GodMode = 1
+							NTF_InfiniteStamina% = True
+							NoClip = 1
+							Curr106\Idle = True
+							Curr106\State = 200000
+							Contained106 = True
+							CameraFogNear = 0
+							CameraFogFar = 10000
+							Brightness = 255
+					End Select
+					
+					CreateConsoleMsg(ConsoleInput)
+				Case "changezone"
+					If Instr(ConsoleInput, " ")<>0 Then
+						StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
+					Else
+						StrTemp$ = ""
+					EndIf
+					
+					Select Lower(StrTemp)
+						Case 1
+							ChangeZone(1)
+						Case 2
+							ChangeZone(2)
+						Case 3
+							ChangeZone(3)
+					End Select
+				Case "teleport173"
+					PositionEntity Curr173\Collider,EntityX(Collider,True),EntityY(Collider,True)+0.5,EntityZ(Collider,True)
+					ResetEntity Curr173\Collider
+				Case "box173"
+					Curr173\Idle = 2
+					Curr173\TargetEnt% = Collider
+					Contain173State% = 3
 				Case "help"
 					If Instr(ConsoleInput, " ")<>0 Then
 						StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
@@ -731,6 +878,36 @@ Function UpdateConsole()
 							n\state = 1
 						Case "966", "scp966", "scp-966"
 							n.NPCs = CreateNPC(NPCtype966, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "mtf2"
+							n.NPCs = CreateNPC(NPCtypeMTF2, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "d2"
+							n.NPCs = CreateNPC(NPCtypeD2, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "scp-457","457","scp457"
+							n.NPCs = CreateNPC(NPCtype457, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "class-d","classd","d"
+							n.NPCs = CreateNPC(NPCtypeD, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "372","scp372","scp-372"
+							n.NPCs = CreateNPC(NPCtype372, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "apache"
+							n.NPCs = CreateNPC(NPCtypeApache, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "513-1","scp513-1","scp-513-1"
+							n.NPCs = CreateNPC(NPCtype5131, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "tentacle"
+							n.NPCs = CreateNPC(NPCtypeTentacle, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						;Case "860-2","scp860-2","scp-860-2"
+						;	n.NPCs = CreateNPC(NPCtype860, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						;	n\State = 2
+						Case "939","scp939","scp-939"
+							n.NPCs = CreateNPC(NPCtype939, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+							n\State = 1
+						Case "066","scp066","scp-066"
+							n.NPCs = CreateNPC(NPCtype066, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "npc178"
+							n.NPCs = CreateNPC(NPCtype178, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "pdplane"
+							n.NPCs = CreateNPC(NPCtypePdPlane, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+						Case "1048-a","scp1048-a","scp-1048-a","scp1048a","scp-1048a"
+							n.NPCs = CreateNPC(NPCtype1048a, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 						Default 
 							CreateConsoleMsg("NPC type not found")
 					End Select
@@ -812,7 +989,7 @@ Global TempSoundCHN%
 Global TempSoundIndex% = 0
 
 
-Dim Music%(17)
+Dim Music%(30)
 Music(0) = LoadSound_Strict("SFX\Music\The Dread.ogg")
 Music(1) = LoadSound_Strict("SFX\Music\HCZ Background.ogg") 
 Music(2) = LoadSound_Strict("SFX\Music\Anxiety.ogg") 
@@ -824,13 +1001,21 @@ Music(2) = LoadSound_Strict("SFX\Music\Anxiety.ogg")
 ;Music(8) = LoadSound_Strict("SFX\Music\SCP-049 Tension.ogg") 
 ;Music(9) = LoadSound_Strict("SFX\Music\Forest.ogg") 
 Music(10) = LoadSound_Strict("SFX\Music\Bump in the Night.ogg")
-Music(11) = LoadSound_Strict("SFX\Music\MenuAmbience.ogg")
+Music(11) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\MenuTheme.ogg")
 ;Music(12) = LoadSound_strict("SFX\Music\Forest2.ogg")
 ;Music(13) = LoadSound_strict("SFX\Music\Blue Feather.ogg")
 ;Music(14) = LoadSound("SFX\178ambient.ogg")
 ;Music(15) = LoadSound("SFX\Music\PDTrenchAmbience.ogg")
 ;Music(15) = LoadSound("SFX\Music\205_music.ogg")
-
+Music(16) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\hallways.ogg") 
+Music(17) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\Groaning.ogg")
+Music(18) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\s_gasmask_amb.ogg")
+Music(19) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\s_gasmask_comb.ogg")
+Music(20) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\1499_mfe_lp11.ogg")
+Music(21) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\ChillingAmbiance.ogg")
+Music(22) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\GrowlingAmbiance.ogg")
+Music(23) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\Satiate.ogg")
+Music(24) = LoadSound_Strict("NineTailedFoxMod\SFX\Music\gatemusic.ogg")
 
 Global MusicVolume# = GetINIFloat(OptionFile, "options", "music volume")
 Global MusicCHN% = PlaySound(Music(2))
@@ -997,10 +1182,10 @@ Global ApacheSFX = LoadSound_Strict("SFX\apache.ogg")
 Global CurrStepSFX
 Dim StepSFX%(3, 2, 4) ;(normal/metal, walk/run, id)
 For i = 0 To 3
-	StepSFX(0, 0, i) = LoadSound_Strict("SFX\step" + (i + 1) + ".ogg")
-	StepSFX(1, 0, i) = LoadSound_Strict("SFX\stepmetal" + (i + 1) + ".ogg")
-	StepSFX(0, 1, i)= LoadSound_Strict("SFX\run" + (i + 1) + ".ogg")
-	StepSFX(1, 1, i) = LoadSound_Strict("SFX\runmetal" + (i + 1) + ".ogg")
+	StepSFX(0, 0, i) = LoadSound_Strict("NineTailedFoxMod\SFX\player\mtf_boot_generic_sprint" + (i + 1) + ".ogg")
+	StepSFX(1, 0, i) = LoadSound_Strict("NineTailedFoxMod\SFX\player\mtf_boot_metal_sprint" + (i + 1) + ".ogg")
+	StepSFX(0, 1, i) = LoadSound_Strict("NineTailedFoxMod\SFX\player\mtf_boot_generic_walk" + (i + 1) + ".ogg")
+	StepSFX(1, 1, i) = LoadSound_Strict("NineTailedFoxMod\SFX\player\mtf_boot_metal_walk"+ (i + 1) + ".ogg")
 	If i < 3 Then StepSFX(2, 0, i) = LoadSound_Strict("SFX\MTF\StepMTF" + (i + 1) + ".ogg")	
 Next
 
@@ -1016,7 +1201,7 @@ DrawLoading(30, True)
 
 ;-----------------------------------------  Images ----------------------------------------------------------
 
-Global PauseMenuIMG% = LoadImage_Strict("GFX\menu\pausemenu.jpg")
+Global PauseMenuIMG% = LoadImage_Strict("NineTailedFoxMod\GFX\menu\pausemenu.jpg")
 MaskImage PauseMenuIMG, 255,255,0
 ScaleImage PauseMenuIMG,MenuScale,MenuScale
 
@@ -1240,7 +1425,7 @@ Function UpdateDoors()
 	ClosestDoor = Null
 	
 	For d.Doors = Each Doors
-		If d\dist < HideDistance*2 Then 
+		If d\dist < HideDistance*2 Then
 			
 			If (d\openstate >= 180 Or d\openstate <= 0) And GrabbedEntity = 0 Then
 				For i% = 0 To 1
@@ -1292,7 +1477,7 @@ Function UpdateDoors()
 					d\fastopen = 0
 					ResetEntity(d\obj)
 					If d\obj2 <> 0 Then ResetEntity(d\obj2)
-					If d\timerstate > 0 Then
+					If d\timer > 0 And d\timerstate > 0 Then
 						d\timerstate = Max(0, d\timerstate - FPSfactor)
 						If d\timerstate + FPSfactor > 110 And d\timerstate <= 110 Then PlaySound2(CautionSFX, Camera, d\obj)
 						If d\timerstate = 0 Then d\open = (Not d\open) : PlaySound2(CloseDoorSFX(Min(d\dir,1),Rand(0, 2)), Camera, d\obj)
@@ -1489,6 +1674,9 @@ DrawLoading(40,True)
 
 Include "MapSystem.bb"
 
+Include "MTF.bb"
+Include "Guns.bb"
+
 DrawLoading(80,True)
 
 Include "NPCs.bb"
@@ -1561,13 +1749,59 @@ End Function
 Function InitEvents()
 	Local e.Events
 	
+	If SelectedDifficulty\aggressiveNPCs
+		If Rand(10)<10
+			CreateEvent("room3ct106","room3ct",0)
+		Else
+			CreateEvent("room3ct","room3ct",0)
+		EndIf
+	Else
+		If Rand(10)<6
+			CreateEvent("room3ct106","room3ct",0)
+		Else
+			CreateEvent("room3ct","room3ct",0)
+		EndIf
+	EndIf
+	CreateEvent("room4tunnels","room4tunnels",0)
+	CreateEvent("room457","room457",0)
+	CreateEvent("room2gw","room2gw",0)
+	CreateEvent("dimension1499","dimension1499",0)
+	CreateEvent("room2vent","room2vent",0)
+	CreateEvent("room1162","room1162",0)
+	CreateEvent("room2scps2","room2scps2",0)
+	CreateEvent("gateaintro","gateaintro",0)
+	
+	CreateEvent("sound_event","room2", 0, 0.4)
+	CreateEvent("sound_event","room2z3", 0, 0.4)
+	CreateEvent("sound_event","room2tunnel", 0, 0.4)
+	CreateEvent("sound_event","endroom", 0, 0.4)
+	CreateEvent("sound_event","endroom2", 0, 0.4)
+	CreateEvent("sound_event","room3tunnel", 0, 0.4)
+	CreateEvent("sound_event","tunnel", 0, 0.4)
+	CreateEvent("sound_event","room3", 0, 0.4)
+	CreateEvent("sound_event","room3_2", 0, 0.4)
+	
+	CreateEvent("classd_spawn","room2z3", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room2", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","tunnel", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","endroom", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","endroom2", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","tunnel2", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room3", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room3z3", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room4", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room4z3", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("classd_spawn","room3tunnel", 0, 0.8 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	
+	
+	
 	CreateEvent("173", "173", 0)
-	CreateEvent("alarm", "start", 0)
+	;CreateEvent("alarm", "start", 0)
 	
 	CreateEvent("pocketdimension", "pocketdimension", 0)	
 	
 	;there's a 7% chance that 106 appears in the rooms named "tunnel"
-	CreateEvent("tunnel106", "tunnel", 0, 0.07 + (0.1*SelectedDifficulty\aggressiveNPCs))
+	CreateEvent("tunnel106", "tunnel", 0, 0.07  )
 	
 	;the chance for 173 appearing in the first lockroom is about 66%
 	;there's a 30% chance that it appears in the later lockrooms
@@ -1577,6 +1811,8 @@ Function InitEvents()
 	CreateEvent("room2trick", "room2", 0, 0.15)	
 	
 	CreateEvent("1048a", "room2", 0, 1.0)	
+	
+	
 	
 	CreateEvent("room2storage", "room2storage", 0)	
 	
@@ -1610,6 +1846,7 @@ Function InitEvents()
 	
 	CreateEvent("room3pitduck", "room3pit", 0)
 	CreateEvent("room3pit1048", "room3pit", 1)
+	CreateEvent("room3pit1048", "room3pit", 3)
 	
 	;the event that causes the door to open by itself in room2offices3
 	CreateEvent("room2offices3", "room2offices3", 0, 1.0)	
@@ -1731,6 +1968,7 @@ Collisions HIT_ITEM, HIT_MAP, 2, 2
 Collisions HIT_APACHE, HIT_APACHE, 1, 2
 Collisions HIT_178, HIT_MAP, 2, 2
 Collisions HIT_178, HIT_178, 1, 3
+Collisions HIT_PLAYER, HIT_INTRO_HELI, 2, 2
 
 DrawLoading(90, True)
 
@@ -1773,12 +2011,44 @@ MainMenuOpen = True
 
 ;---------------------------------------------------------------------------------------------------
 
+LoadAchievements()
+
 FlushKeys()
 FlushMouse()
 
 DrawLoading(100, True)
 
 LoopDelay = MilliSecs()
+
+Global Movie_ShouldPlay% = GetINIInt("NineTailedFoxMod\options.INI","ingame","play movie","1")
+Global ThreadFunctionPointer,Thread
+Global MoviePlayed%
+Global movie, movieSFX%
+
+If MoviePlayed%=False And Movie_ShouldPlay%=True
+	FlushKeys()
+	FlushMouse()
+	movieSFX% = LoadSound("NineTailedFoxMod\GFX\menu\ntf_aud_track.ogg")
+	ThreadFunctionPointer = FunctionPointer()
+	Goto skip1
+	ThreadFunction()
+	.skip1
+	movie = OpenMovie("NineTailedFoxMod\GFX\menu\ntf_intro_final.mpg")
+	If ChannelPlaying(MusicCHN) Then StopChannel(MusicCHN)
+	Thread = CreateThread(ThreadFunctionPointer,100)
+	PlaySound(movieSFX%)
+	Repeat
+		ShouldPlay% = 11
+		NowPlaying% = 11
+	Until MoviePlaying(movie)=False Or KeyHit(1) Or KeyHit(57) Or MouseHit(1)
+	CloseMovie(movie)
+	FreeThread(Thread)
+	FreeSound movieSFX%
+	movie = 0
+	movieSFX% = 0
+	
+	MoviePlayed% = True
+EndIf
 
 ;----------------------------------------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------       		MAIN LOOP                 ---------------------------------------------------------------
@@ -1851,7 +2121,7 @@ Repeat
 			SelectedItem = Null 
 		EndIf
 		
-		If PlayerRoom\RoomTemplate\Name <> "pocketdimension" And PlayerRoom\RoomTemplate\Name <> "gatea"  Then 
+		If PlayerRoom\RoomTemplate\Name <> "pocketdimension" And PlayerRoom\RoomTemplate\Name <> "gatea" And PlayerRoom\RoomTemplate\Name <> "dimension1499" Then 
 			
 			If Rand(1500) = 1 Then
 				For i = 0 To 5
@@ -1879,10 +2149,58 @@ Repeat
 				AmbientSFXCHN = PlaySound2(AmbientSFX(PlayerZone,CurrAmbientSFX), Camera, SoundEmitter)
 			EndIf
 			If Rand(40000) = 3 Then
-				If PlayerRoom\RoomTemplate\Name <> "pocketdimension" And PlayerRoom\RoomTemplate\Name <> "room860" And PlayerRoom\RoomTemplate\Name <> "173" Then
+				If PlayerRoom\RoomTemplate\Name <> "pocketdimension" And PlayerRoom\RoomTemplate\Name <> "room860" And PlayerRoom\RoomTemplate\Name <> "dimension1499" Then
 					If FPSfactor > 0 Then LightBlink = Rnd(1.0,2.0)
 					PlaySound  LoadTempSound("SFX\079_"+Rand(7,10)+".ogg")
 				EndIf 
+			EndIf
+			If Rand(2000) = 1 Then
+				If PlayerRoom\RoomTemplate\Name <> "pocketdimension" And PlayerRoom\RoomTemplate\Name <> "room860" And PlayerRoom\RoomTemplate\Name <> "dimension1499" Then
+					;PlaySound NTF_AmbientSFX(Rand(15),Rand(NTF_MaxAmbientSFX%-1))
+					;Select Rand(15)
+					;	Case 0
+					;		PlaySound NTF_AmbientSFX(0,Rand(NTF_MaxAmbientSFX%-1))
+					;	Case 1
+					;		PlaySound NTF_AmbientSFX(1,Rand(NTF_1MaxAmbient%-1))
+					;	Case 2
+					;		PlaySound NTF_AmbientSFX(2,Rand(NTF_2MaxAmbient%-1))
+					;	Case 3
+					;		PlaySound NTF_AmbientSFX(3,Rand(NTF_3MaxAmbient%-1))
+					;	Case 4
+					;		PlaySound NTF_AmbientSFX(4,Rand(NTF_4MaxAmbient%-1))
+					;	Case 5
+					;		PlaySound NTF_AmbientSFX(5,Rand(NTF_5MaxAmbient%-1))
+					;	Case 6
+					;		PlaySound NTF_AmbientSFX(6,Rand(NTF_6MaxAmbient%-1))
+					;	Case 7
+					;		PlaySound NTF_AmbientSFX(7,Rand(NTF_7MaxAmbient%-1))
+					;	Case 8
+					;		PlaySound NTF_AmbientSFX(8,Rand(NTF_8MaxAmbient%-1))
+					;	Case 9
+					;		PlaySound NTF_AmbientSFX(9,Rand(NTF_9MaxAmbient%-1))
+					;	Case 10
+					;		PlaySound NTF_AmbientSFX(10,Rand(NTF_10MaxAmbient%-1))
+					;	Case 11
+					;		PlaySound NTF_AmbientSFX(11,Rand(NTF_11MaxAmbient%-1))
+					;	Case 12
+					;		PlaySound NTF_AmbientSFX(12,Rand(NTF_12MaxAmbient%-1))
+					;	Case 13
+					;		PlaySound NTF_AmbientSFX(13,Rand(NTF_13MaxAmbient%-1))
+					;	Case 14
+					;		PlaySound NTF_AmbientSFX(14,Rand(NTF_14MaxAmbient%-1))
+					;	Case 15
+					;		PlaySound NTF_AmbientSFX(15,Rand(NTF_15MaxAmbient%-1))
+					;End Select
+					If ChannelPlaying(NTF_AmbienceCHN)=0 Then FreeSound NTF_AmbienceSFX : NTF_AmbienceSFX = 0
+						
+					If NTF_AmbienceSFX=0
+						If PlayerRoom\RoomTemplate\Name <> "gateaintro"
+							PlaySound LoadSound_Strict("NineTailedFoxMod\SFX\ambience\"+NTF_AmbienceStrings$(Rand(105)))
+						Else
+							PlaySound LoadSound_Strict("NineTailedFoxMod\SFX\ambience\Intro\"+NTF_IntroAmbienceStrings$(Rand(40)))
+						EndIf
+					EndIf
+				EndIf
 			EndIf
 		EndIf
 		
@@ -1891,7 +2209,8 @@ Repeat
 			CameraFogRange(Camera, CameraFogNear*LightVolume,CameraFogFar*LightVolume)
 			CameraFogColor(Camera, 0,0,0)
 			CameraFogMode Camera,1
-			CameraRange(Camera, 0.05, Min(CameraFogFar*LightVolume*1.5,28))	
+			;CameraRange(Camera, 0.05, Min(CameraFogFar*LightVolume*1.5,28))
+			CameraRange(Camera, 0.01, Min(CameraFogFar*LightVolume*1.5,28))	
 			
 			AmbientLight Brightness, Brightness, Brightness	
 			PlayerSoundVolume = CurveValue(0.0, PlayerSoundVolume, 5.0)
@@ -1908,10 +2227,55 @@ Repeat
 			UpdateParticles()
 			UpdateScreens()
 			
+			If KillTimer >= 0
+				If CanPlayerUseGuns%
+					UpdateGuns()
+					AnimateGuns()
+					UpdateChatSound()
+				EndIf
+			Else
+				If ChannelPlaying(ChatSFXCHN) Then StopChannel(ChatSFXCHN)
+			EndIf
+			;UpdatePlayerModel()
+			;UpdateBloodSpit()
+			;AnimateGuns()
+			Update_Fires()
+			Update_AshParticles()
+			UpdateRoomLights()
+			UpdateMeshLOD()
+			;UpdateMapProps()
+			
+			If Contain173State% > 0 And Contain173State% < 3
+				If (BlinkTimer < - 16 Or BlinkTimer > - 6)
+					Contain173_SoundPlayed% = False
+				Else
+					If Contain173_SoundPlayed% = False
+						PlayChatSound("173blinking",1,3)
+						Contain173_SoundPlayed% = True
+					EndIf
+				EndIf
+			EndIf
 		EndIf
+		
+		For r.Rooms = Each Rooms
+			If r\RoomTemplate\Name$ = "start"
+				If Contain173State% = 4
+					If Distance(EntityX(Collider),EntityZ(Collider),EntityX(r\obj,True)+1024*RoomScale,EntityZ(r\obj,True)+384*RoomScale)<12.0
+						If r\RoomDoors[1]\open = True
+							UseDoor(r\RoomDoors[1],False)
+							GiveAchievement(NTF_AchvContain173)
+						EndIf
+					EndIf
+				EndIf
+			EndIf
+		Next
 		
 		UpdateWorld()
 		RenderWorld2()
+		
+		If UsingScope%
+			UpdateScope()
+		EndIf
 		
 		BlurVolume = Min(CurveValue(0.0, BlurVolume, 20.0),0.95)
 		If BlurTimer > 0.0 Then
@@ -2028,7 +2392,7 @@ Repeat
 		
 		If KeyHit(63) Then
 			If SelectedDifficulty\saveType = SAVEANYWHERE Then
-				If PlayerRoom\RoomTemplate\Name = "exit1" Or PlayerRoom\RoomTemplate\Name = "173" Or PlayerRoom\RoomTemplate\Name = "gatea" Then
+				If PlayerRoom\RoomTemplate\Name = "exit1" Or PlayerRoom\RoomTemplate\Name = "173" Or PlayerRoom\RoomTemplate\Name = "gatea" Or (PlayerRoom\RoomTemplate\Name = "gatea") Then
 					Msg = "You can't save in this location"
 					MsgTimer = 70 * 4
 				Else
@@ -2123,7 +2487,9 @@ Function Kill()
 		ShowEntity Head
 		PositionEntity(Head, EntityX(Camera, True), EntityY(Camera, True), EntityZ(Camera, True), True)
 		ResetEntity (Head)
-		RotateEntity(Head, 0, EntityYaw(Camera), 0)		
+		RotateEntity(Head, 0, EntityYaw(Camera), 0)	
+		
+		HideEntity GunPivot	
 	EndIf
 End Function
 
@@ -2285,8 +2651,9 @@ Function MovePlayer()
 		CameraShake = Sin(SuperManTimer / 5.0) * (SuperManTimer / 1500.0)
 		
 		If SuperManTimer > 70 * 50 Then
-			DeathMSG = "A Class D jumpsuit found in [DATA REDACTED]. Upon further examination, the jumpsuit was found to be filled with 12.5 kilograms of blue ash-like substance. "
-			DeathMSG = DeathMSG + "Chemical analysis of the substance remains non-conclusive. Most likely related to SCP-914."
+			DeathMSG = "A jumpsuit of a MTF Unit found in [DATA REDACTED]. Upon further examination, the jumpsuit was found to be filled with 12.5 kilograms of blue ash-like substance. "
+			DeathMSG = DeathMSG + "Chemical analysis of the substance remains non-conclusive. It is believed that the jumpsuit is from MTF Unit [Redacted],"
+			DeathMSG = DeathMSG + "as contact to him was lost during the containment breach. Most likely related to SCP-914."
 			Kill()
 			ShowEntity Fog
 		Else
@@ -2348,6 +2715,8 @@ Function MovePlayer()
 	If (Not NoClip) Then 
 		If ((KeyDown(KEY_DOWN) Xor KeyDown(KEY_UP)) Or (KeyDown(KEY_RIGHT) Xor KeyDown(KEY_LEFT)) And Playable) Or ForceMove>0 Then
 			
+			If CanPlayerMove
+			
 			If Crouch = 0 And (KeyDown(KEY_SPRINT)) And Stamina > 0.0 Then
 				Sprint = 2.5
 				Stamina = Stamina - FPSfactor * 0.5 * StaminaEffect
@@ -2371,7 +2740,8 @@ Function MovePlayer()
 			EndIf
 			
 			Local temp# = (Shake Mod 360), tempchn%
-			Shake# = (Shake + FPSfactor * Min(Sprint, 1.5) * 7) Mod 720
+			;Shake# = (Shake + FPSfactor * Min(Sprint, 1.5) * 7) Mod 720
+			Shake# = (Shake + FPSfactor * Min(Sprint, 1.5) * 10) Mod 720
 			If temp < 180 And (Shake Mod 360) >= 180 Then
 				If CurrStepSFX=0 Then
 					temp = GetStepSound()
@@ -2393,7 +2763,10 @@ Function MovePlayer()
 					ChannelVolume tempchn, 1.0-(Crouch*0.4)
 				EndIf
 				
-			EndIf	
+			EndIf
+			
+			EndIf
+				
 		EndIf
 	Else ;noclip on
 		If (KeyDown(KEY_SPRINT)) Then 
@@ -2425,6 +2798,8 @@ Function MovePlayer()
 		
 		ResetEntity Collider
 	Else
+		If CanPlayerMove%
+		
 		temp2# = temp2 / Max((Injuries+3.0)/3.0,1.0)
 		If Injuries > 0.5 Then 
 			temp2 = temp2*Min((Sin(Shake/2)+1.2),1.0)
@@ -2481,6 +2856,8 @@ Function MovePlayer()
 		EndIf	
 		
 		TranslateEntity Collider, 0, DropSpeed * FPSfactor, 0
+		
+		EndIf
 	EndIf
 	
 	ForceMove = False
@@ -2574,13 +2951,16 @@ Function MouseLook()
 		EndIf
 		;EndIf
 		
-		Local up# = (Sin(Shake) / (20.0+CrouchState*20.0))*0.6;, side# = Cos(Shake / 2.0) / 35.0		
+		;Local up# = (Sin(Shake) / (20.0+CrouchState*20.0))*0.6;, side# = Cos(Shake / 2.0) / 35.0
+		Local up# = (Sin(Shake) / (20.0+CrouchState*20.0))*0.6
+		Local side# = Cos(Shake / 2.0) / 35.0		
 		Local roll# = Max(Min(Sin(Shake/2)*2.5*Min(Injuries+0.25,3.0),8.0),-8.0)
 		
 		;k‰‰nnet‰‰n kameraa sivulle jos pelaaja on vammautunut
 		;RotateEntity Collider, EntityPitch(Collider), EntityYaw(Collider), Max(Min(up*30*Injuries,50),-50)
 		PositionEntity Camera, EntityX(Collider), EntityY(Collider), EntityZ(Collider)
-		RotateEntity Camera, 0, EntityYaw(Collider), roll*0.5
+		;RotateEntity Camera, 0, EntityYaw(Collider), roll*0.5
+		RotateEntity Camera, 0, EntityYaw(Collider), roll*0.25
 		
 		MoveEntity Camera, side, up + 0.6 + CrouchState * -0.3, 0
 		
@@ -2673,7 +3053,7 @@ Function MouseLook()
 		MoveMouse viewport_center_x, viewport_center_y
 	EndIf
 	
-	If WearingGasMask Or WearingHazmat Then
+	If WearingGasMask Or WearingHazmat Or NTF_Wearing1499% Then
 		If WearingGasMask = 2 Then Stamina = Min(100, Stamina + (100.0-Stamina)*0.01*FPSfactor)
 		If WearingHazmat = 2 Then 
 			Stamina = Min(100, Stamina + (100.0-Stamina)*0.01*FPSfactor)
@@ -2685,6 +3065,8 @@ Function MouseLook()
 	Else
 		HideEntity(GasMaskOverlay)
 	End If
+	
+	If NTF_InfiniteStamina% Then Stamina = Min(100, Stamina + (100.0-Stamina)*0.01*FPSfactor)
 	
 	If (Not WearingNightVision=0) Then
 		;AmbientLightRooms(60)
@@ -2941,6 +3323,15 @@ Function DrawGUI()
 	
 	If Using294 Then Use294()
 	
+	If (Not MenuOpen) And (Not InvOpen) And (OtherOpen=Null) And (SelectedDoor=Null) And (ConsoleOpen=False) And (Using294=False) And (SelectedScreen=Null) And EndingTimer=>0 And KillTimer >= 0
+		If PlayerRoom\RoomTemplate\Name$ <> "gateaintro"
+			UseChatSounds()
+			UpdateRadio()
+		EndIf
+	EndIf
+
+	FindError()
+	
 	If HUDenabled Then 
 		
 		Local width% = 204, height% = 20
@@ -2982,6 +3373,8 @@ Function DrawGUI()
 		Else
 			DrawImage SprintIcon, x - 50, y
 		EndIf
+		
+		DrawGunsInHud()
 		
 		If DebugHUD Then
 			Color 255, 255, 255
@@ -3031,8 +3424,16 @@ Function DrawGUI()
 			Next
 			
 		EndIf
-		
+	
+	Else
+		If (Not MenuOpen) And (Not InvOpen) And (OtherOpen=Null) And (SelectedDoor=Null) And (ConsoleOpen=False) And (Using294=False) And (SelectedScreen=Null) And EndingTimer=>0 And KillTimer >= 0
+			ToggleGuns_NoHUD()
+		EndIf
 	EndIf
+	
+	SetFont Font6
+	DrawSplashText()
+	SetFont Font1
 	
 	Local PrevInvOpen% = InvOpen, MouseSlot% = 66
 	
@@ -3196,13 +3597,21 @@ Function DrawGUI()
 			CameraFogRange Camera, 5,30
 			CameraFogColor (Camera,200,200,200)
 			CameraClsColor (Camera,200,200,200)					
-			CameraRange(Camera, 0.05, 30)
+			;CameraRange(Camera, 0.05, 30)
+			CameraRange(Camera, 0.01, 30)
+		Else If (PlayerRoom\RoomTemplate\Name = "gateaintro") Then
+			HideEntity Fog
+			CameraFogRange Camera, 5,30
+			CameraFogColor (Camera,200,200,200)
+			CameraClsColor (Camera,200,200,200)					
+			CameraRange(Camera, 0.01, 100)
 		Else If (PlayerRoom\RoomTemplate\Name = "exit1") And (EntityY(Collider)>1040.0*RoomScale)
 			HideEntity Fog
 			CameraFogRange Camera, 5,45
 			CameraFogColor (Camera,200,200,200)
 			CameraClsColor (Camera,200,200,200)					
-			CameraRange(Camera, 0.05, 60)
+			;CameraRange(Camera, 0.05, 60)
+			CameraRange(Camera, 0.01, 60)
 		EndIf
 		
 		PrevOtherOpen = OtherOpen
@@ -3393,13 +3802,21 @@ Function DrawGUI()
 			CameraFogRange Camera, 5,30
 			CameraFogColor (Camera,200,200,200)
 			CameraClsColor (Camera,200,200,200)					
-			CameraRange(Camera, 0.05, 30)
+			;CameraRange(Camera, 0.05, 30)
+			CameraRange(Camera, 0.01, 30)
+		Else If (PlayerRoom\RoomTemplate\Name = "gateaintro") Then
+			HideEntity Fog
+			CameraFogRange Camera, 5,30
+			CameraFogColor (Camera,200,200,200)
+			CameraClsColor (Camera,200,200,200)					
+			CameraRange(Camera, 0.01, 100)
 		ElseIf (PlayerRoom\RoomTemplate\Name = "exit1") And (EntityY(Collider)>1040.0*RoomScale)
 			HideEntity Fog
 			CameraFogRange Camera, 5,45
 			CameraFogColor (Camera,200,200,200)
 			CameraClsColor (Camera,200,200,200)					
-			CameraRange(Camera, 0.05, 60)
+			;CameraRange(Camera, 0.05, 60)
+			CameraRange(Camera, 0.01, 60)
 		EndIf
 		
 		SelectedDoor = Null
@@ -3422,7 +3839,9 @@ Function DrawGUI()
 			
 			If Inventory(n) <> Null Then
 				Color 200, 200, 200
-				Select Inventory(n)\itemtemplate\tempname 
+				Select Inventory(n)\itemtemplate\tempname
+					Case "scp1499"
+						If NTF_Wearing1499%=1 Then Rect(x - 3, y - 3, width + 6, height + 6) 
 					Case "gasmask"
 						If WearingGasMask=1 Then Rect(x - 3, y - 3, width + 6, height + 6)
 					Case "supergasmask"
@@ -3491,9 +3910,9 @@ Function DrawGUI()
 						
 						SetFont Font1
 						Color 0,0,0
-						Text(x + width / 2 + 1, y + height + spacing - 15 + 1, Inventory(n)\name, True)							
+						Text(x + width / 2 + 1, y + height + spacing - 15 + 1, Lang_Replace(Inventory(n)\name), True)							
 						Color 255, 255, 255	
-						Text(x + width / 2, y + height + spacing - 15, Inventory(n)\name, True)	
+						Text(x + width / 2, y + height + spacing - 15, Lang_Replace(Inventory(n)\name), True)	
 						
 					EndIf
 				EndIf
@@ -3525,12 +3944,17 @@ Function DrawGUI()
 				EndIf
 			Else
 				If MouseSlot = 66 Then
-					DropItem(SelectedItem)
-					
-					SelectedItem = Null
-					InvOpen = False
-					
-					MoveMouse viewport_center_x, viewport_center_y
+					If SelectedItem\itemtemplate\tempname <> "scp198"
+						DropItem(SelectedItem)
+						
+						SelectedItem = Null
+						InvOpen = False
+						
+						MoveMouse viewport_center_x, viewport_center_y
+					Else
+						Msg = "You can't get rid of SCP-198"
+						MsgTimer = 70*6
+					EndIf
 				Else
 					
 					If Inventory(MouseSlot) = Null Then
@@ -4025,8 +4449,6 @@ Function DrawGUI()
 					
 					Local loc% = GetINISectionLocation(iniStr, SelectedItem\name)
 					
-					Stop
-					
 					strtemp = GetINIString2(iniStr, loc, "message")
 					If strtemp <> "" Then Msg = strtemp : MsgTimer = 70*6
 					
@@ -4298,7 +4720,7 @@ Function DrawGUI()
 					If Wearing714=1 Then
 						Msg = "DUDE WTF THIS SHIT DOESN'T EVEN WORK"	
 					Else
-						DeathMSG = "Subject D-9341 found in a comatose state in [DATA REDACTED]. The subject was holding what appears to be a cigarette and smiling widely. "
+						DeathMSG = "MTF Unit [REDACTED] found in a comatose state in [DATA REDACTED]. The subject was holding what appears to be a cigarette and smiling widely. "
 						DeathMSG = DeathMSG+"Chemical analysis of the cigarette has been inconclusive, although it seems to contain a high concentration of an unidentified chemical "
 						DeathMSG = DeathMSG+"whose molecular structure is remarkably similar to that of tetrahydrocannabinol."
 						Msg = "UH WHERE... WHAT WAS I DOING AGAIN... MAN I NEED TO TAKE A NAP..."
@@ -4333,24 +4755,131 @@ Function DrawGUI()
 					EndIf
 					SelectedItem = Null	
 				Case "vest"
-					If WearingVest Then
-						Msg = "You took off the vest."
-						WearingVest = False
+					;If WearingVest Then
+					;	Msg = "You took off the vest."
+					;	WearingVest = False
+					;Else
+					;	Msg = "You put on the vest and feel slightly encumbered."
+					;	WearingVest = True
+					;EndIf
+					;MsgTimer = 70 * 7
+					;SelectedItem = Null
+					If Kevlar_Health%<100
+						Msg = "You replaced your Kevlar."
+						Kevlar_Health%=100
+						PlaySound(KevlarSFX)
+						RemoveItem(SelectedItem)
 					Else
-						Msg = "You put on the vest and feel slightly encumbered."
-						WearingVest = True
+						Msg = "You are not in need to replace your Kevlar."
+						SelectedItem = Null
 					EndIf
-					MsgTimer = 70 * 7
-					SelectedItem = Null
+					MsgTimer = 70 * 5
 				Case "finevest"
-					If WearingVest Then
-						Msg = "You took off the vest."
-						WearingVest = False						
+					;If WearingVest Then
+					;	Msg = "You took off the vest."
+					;	WearingVest = False						
+					;Else
+					;	Msg = "You put on the vest and feel heavily encumbered."
+					;	WearingVest = 2
+					;EndIf
+					;SelectedItem = Null	
+					If Kevlar_ExtraHealth%<50
+						Msg = "You replaced your Kevlar and it makes you heavily encumbered."
+						Kevlar_Health%=100
+						Kevlar_ExtraHealth%=50
+						PlaySound(KevlarSFX)
+						RemoveItem(SelectedItem)
 					Else
-						Msg = "You put on the vest and feel heavily encumbered."
-						WearingVest = 2
+						Msg = "You are not in need to replace your Kevlar."
+						SelectedItem = Null
 					EndIf
-					SelectedItem = Null	
+					MsgTimer = 70 * 5
+				Case "p90"
+					If P90Ammo% < 4
+						P90Ammo% = P90Ammo% + 1
+						PlaySound(GunPickSFX(0))
+						Msg = "You added 1 magazine for the FN P90."
+						RemoveItem(SelectedItem)
+					Else
+						Msg = "You can't carry any more ammo for the FN P90."
+						SelectedItem = Null
+					EndIf
+					MsgTimer = 70 * 5
+				Case "usp"
+					If USPAmmo% < 5
+						USPAmmo% = USPAmmo% + 1
+						PlaySound(GunPickSFX(1))
+						Msg = "You added 1 magazine for the USP Tactical."
+						RemoveItem(SelectedItem)
+					Else
+						Msg = "You can't carry any more ammo for the USP Tactical."
+						SelectedItem = Null
+					EndIf
+					MsgTimer = 70 * 5
+				Case "m9"
+					If M9Ammo% < 5
+						M9Ammo% = M9Ammo% + 1
+						PlaySound(GunPickSFX(1))
+						Msg = "You added 1 magazine for the M9 Beretta."
+						RemoveItem(SelectedItem)
+					Else
+						Msg = "You can't carry any more ammo for the M9 Beretta."
+						SelectedItem = Null
+					EndIf
+					MsgTimer = 70 * 5
+				Case "scp1499"
+					If NTF_Wearing1499% Then
+						Msg = "You took off SCP-1499 and you reappeared in the facility."
+						For r.Rooms = Each Rooms
+							If r\RoomTemplate\Name = NTF_1499PrevRoom$ Then
+								NTF_1499X# = EntityX(Collider)
+								NTF_1499Y# = EntityY(Collider)
+								NTF_1499Z# = EntityZ(Collider)
+								PositionEntity (Collider, NTF_1499PrevX#, NTF_1499PrevY#+0.05, NTF_1499PrevZ#)
+								ResetEntity(Collider)
+								UpdateDoors()
+								UpdateRooms()
+								For it.Items = Each Items
+									it\disttimer = 0
+								Next
+								PlayerRoom = r
+								PlaySound NTF_1499LeaveSFX%
+								Exit
+							EndIf
+						Next
+					Else
+						Msg = "You took on SCP-1499 and you appeared in a strange dimension."
+						Wearing178 = 0
+						WearingGasMask = 0
+						If WearingNightVision Then CameraFogFar = StoredCameraFogFar
+						WearingNightVision = 0
+						For r.Rooms = Each Rooms
+							If r\RoomTemplate\Name = "dimension1499" Then
+								NTF_1499PrevRoom = PlayerRoom\RoomTemplate\Name
+								NTF_1499PrevX# = EntityX(Collider)
+								NTF_1499PrevY# = EntityY(Collider)
+								NTF_1499PrevZ# = EntityZ(Collider)
+								
+								If NTF_1499X# = 0.0 And NTF_1499Y# = 0.0 And NTF_1499Z# = 0.0
+									PositionEntity (Collider, r\x+15616.0*RoomScale, r\y+192.0*RoomScale, r\z-1536.0*RoomScale)
+								Else
+									PositionEntity (Collider, NTF_1499X#, NTF_1499Y#+0.05, NTF_1499Z#)
+								EndIf
+								ResetEntity(Collider)
+								UpdateDoors()
+								UpdateRooms()
+								For it.Items = Each Items
+									it\disttimer = 0
+								Next
+								PlayerRoom = r
+								PlaySound NTF_1499EnterSFX%
+								Exit
+							EndIf
+						Next
+					EndIf
+					MsgTimer = 70 * 5
+					NTF_Wearing1499% = (Not NTF_Wearing1499%)
+					SelectedItem = Null
 				Case "gasmask", "supergasmask", "gasmask3"
 					If WearingGasMask Then
 						Msg = "You took off the gas mask."
@@ -4525,13 +5054,13 @@ Function DrawGUI()
 		End If		
 	EndIf
 	
-	If SelectedItem = Null Then
-		For i = 0 To 6
-			If RadioCHN(i) <> 0 Then 
-				If ChannelPlaying(RadioCHN(i)) Then PauseChannel(RadioCHN(i))
-			EndIf
-		Next
-	EndIf 
+	;If SelectedItem = Null Then
+	;	For i = 0 To 6
+	;		If RadioCHN(i) <> 0 Then 
+	;			If ChannelPlaying(RadioCHN(i)) Then PauseChannel(RadioCHN(i))
+	;		EndIf
+	;	Next
+	;EndIf 
 	
 	If PrevInvOpen And (Not InvOpen) Then MoveMouse viewport_center_x, viewport_center_y
 End Function
@@ -4594,7 +5123,7 @@ Function DrawMenu()
 		
 		If AchievementsMenu <= 0 Then
 			SetFont Font1
-			Text x, y, "Designation: D-9341"
+			Text x, y, "Designation: MTF Unit [REDACTED]"
 			Text x, y+20*MenuScale, "Difficulty: "+SelectedDifficulty\name
 			Text x, y+40*MenuScale,	"Save: "+CurrSave
 			Text x, y+60*MenuScale, "Map seed: "+RandomSeed
@@ -4761,7 +5290,8 @@ Function LoadEntities()
 	SoundEmitter = CreatePivot()
 	
 	Camera = CreateCamera()
-	CameraRange(Camera, 0.05, 16)
+	;CameraRange(Camera, 0.05, 16)
+	CameraRange(Camera, 0.01, 16)
 	CameraFogMode (Camera, 1)
 	CameraFogRange (Camera, CameraFogNear, CameraFogFar)
 	CameraFogColor (Camera, GetINIInt("options.ini", "options", "fog r"), GetINIInt("options.ini", "options", "fog g"), GetINIInt("options.ini", "options", "fog b"))
@@ -5014,9 +5544,13 @@ Function LoadEntities()
 	
 	LoadMaterials("DATA\materials.ini")
 	
+	LoadMaterials("NineTailedFoxMod\Data\materials.ini")
+	
 	DrawLoading(30)
 	
 	;LoadRoomMeshes()
+	InitGuns()
+	LoadModStuff()
 	
 End Function
 
@@ -5027,6 +5561,7 @@ Function InitNewGame()
 	DrawLoading(45)
 	
 	HideDistance# = 15.0
+	;HideDistance# = 5.0
 	
 	HeartBeatRate = 70
 	
@@ -5091,11 +5626,20 @@ Function InitNewGame()
 			EndIf
 		EndIf
 		
-		If (r\RoomTemplate\Name = "start" And IntroEnabled = False) Then 
-			PositionEntity (Collider, EntityX(r\obj)+3584*RoomScale, 704*RoomScale, EntityZ(r\obj)+1024*RoomScale)
+		;If (r\RoomTemplate\Name = "start" And IntroEnabled = False) Then 
+		;	PositionEntity (Collider, EntityX(r\obj)+3584*RoomScale, 704*RoomScale, EntityZ(r\obj)+1024*RoomScale)
+		;	PlayerRoom = r
+		;ElseIf (r\RoomTemplate\Name = "173" And IntroEnabled) Then
+		;	PositionEntity (Collider, EntityX(r\obj), 1.0, EntityZ(r\obj))
+		;	PlayerRoom = r
+		;EndIf
+		
+		If (r\RoomTemplate\Name = "gateaentrance" And IntroEnabled = False) Then 
+			PositionEntity (Collider, EntityX(r\obj), 100*RoomScale, EntityZ(r\obj))
+			;RotateEntity (Collider, 0, EntityYaw(r\obj), 0)
 			PlayerRoom = r
-		ElseIf (r\RoomTemplate\Name = "173" And IntroEnabled) Then
-			PositionEntity (Collider, EntityX(r\obj), 1.0, EntityZ(r\obj))
+		ElseIf (r\RoomTemplate\Name = "gateaintro" And IntroEnabled) Then
+			PositionEntity (Collider, EntityX(r\obj), EntityY(r\obj)+1, EntityZ(r\obj))
 			PlayerRoom = r
 		EndIf
 		
@@ -5111,7 +5655,7 @@ Function InitNewGame()
 		Delete tw
 	Next
 	
-	TurnEntity(Collider, 0, Rand(160, 200), 0)
+	;TurnEntity(Collider, 0, Rand(160, 200), 0)
 	
 	ResetEntity Collider
 	
@@ -5126,6 +5670,41 @@ Function InitNewGame()
 	BlinkTimer = -10
 	BlurTimer = 100
 	Stamina = 100
+	
+	If (Not GameSaved)
+		it.Items = CreateItem("Level 5 Key Card", "key5", EntityX(Collider,True),EntityY(Collider,True)+0.5,EntityZ(Collider,True))
+		EntityType(it\obj, HIT_ITEM)
+		PickItem(it,False)
+		it.Items = CreateItem("Gas Mask", "gasmask", EntityX(Collider,True),EntityY(Collider,True)+0.5,EntityZ(Collider,True))
+		EntityType(it\obj, HIT_ITEM)
+		PickItem(it,False)
+		WearingGasMask=True
+		DebugLog "---------------------"
+		DebugLog "key5 + gasmask"
+		DebugLog "successfully"
+		DebugLog "---------------------"
+	EndIf	
+		
+	;For it.Items = Each Items
+	;	If it\itemtemplate\tempName = "key5"
+	;		If Inventory(0)=Null
+	;			Inventory(0)=it
+	;			DebugLog "---------------------"
+	;			DebugLog "key5"
+	;			DebugLog "successfully"
+	;			DebugLog "---------------------"
+	;		EndIf
+	;	ElseIf it\itemtemplate\tempName = "gasmask"
+	;		If Inventory(1)=Null
+	;			Inventory(1)=it
+	;			DebugLog "---------------------"
+	;			DebugLog "gasmask"
+	;			DebugLog "successfully"
+	;			DebugLog "---------------------"
+	;			WearingGasMask=True
+	;		EndIf
+	;	EndIf
+	;Next
 	
 	For i% = 0 To 70
 		FPSfactor = 1.0
@@ -5216,7 +5795,8 @@ Function NullGame()
 	
 	GameSaved = 0
 	
-	HideDistance# = 15.0
+	;HideDistance# = 15.0
+	HideDistance# = 10.0
 	
 	CameraZoom Camera, 1.0
 	
@@ -5294,9 +5874,10 @@ Function NullGame()
 		Delete s
 	Next
 	
-	For i = 0 To MAXACHIEVEMENTS-1
-		Achievements(i)=0
-	Next
+	SaveAchievements()
+	;For i = 0 To MAXACHIEVEMENTS-1
+	;	Achievements(i)=0
+	;Next
 	RefinedItems = 0
 	
 	ConsoleInput = ""
@@ -5415,6 +5996,13 @@ Function NullGame()
 		If TempSounds[i]<>0 Then FreeSound TempSounds[i] : TempSounds[i]=0
 	Next
 	
+	DeleteModStuff()
+	DeleteGuns()
+	
+	For cdp.CoordPoints = Each CoordPoints
+		Delete cdp
+	Next
+	
 End Function
 
 Include "save.bb"
@@ -5431,7 +6019,7 @@ Function PlaySound2%(SoundHandle%, cam%, entity%, range# = 10, volume# = 1.0)
 			Local panvalue# = Sin(-DeltaYaw(cam,entity))
 			soundchn% = PlaySound (SoundHandle)
 			
-			ChannelVolume(soundchn, volume# * (1 - dist#))
+			ChannelVolume(soundchn, volume# * (1 - dist#)*SFXVolume#)
 			ChannelPan(soundchn, panvalue)			
 		EndIf
 	EndIf
@@ -5455,7 +6043,7 @@ Function LoopSound2%(SoundHandle%, Chn%, cam%, entity%, range# = 10, volume# = 1
 				If (Not ChannelPlaying(Chn)) Then Chn% = PlaySound (SoundHandle)
 			EndIf
 			
-			ChannelVolume(Chn, volume# * (1 - dist#))
+			ChannelVolume(Chn, volume# * (1 - dist#)*SFXVolume#)
 			ChannelPan(Chn, panvalue)
 		EndIf
 	Else
@@ -5473,6 +6061,8 @@ Function LoadTempSound(file$)
 	TempSounds[TempSoundIndex] = TempSound
 	
 	TempSoundIndex=(TempSoundIndex+1) Mod 10
+	
+	SoundVolume TempSound,SFXVolume#
 	
 	Return TempSound
 End Function
@@ -5545,6 +6135,31 @@ Function PauseSounds()
 	If BreathCHN <> 0 Then
 		If ChannelPlaying(BreathCHN) Then PauseChannel(BreathCHN)
 	EndIf
+	
+	If NTF_AmbienceCHN <> 0
+		If ChannelPlaying(NTF_AmbienceCHN) Then PauseChannel(NTF_AmbienceCHN)
+	EndIf
+	
+	If GunCHN <> 0
+		If ChannelPlaying(GunCHN) Then PauseChannel(GunCHN)
+	EndIf
+	
+	If GunCHN2 <> 0
+		If ChannelPlaying(GunCHN2) Then PauseChannel(GunCHN2)
+	EndIf
+	
+	If ChatSFXCHN <> 0
+		If ChannelPlaying(ChatSFXCHN) Then PauseChannel(ChatSFXCHN)
+	EndIf
+	
+	If NTF_ChatCHN1 <> 0
+		If ChannelPlaying(NTF_ChatCHN1) Then PauseChannel(NTF_ChatCHN1)
+	EndIf
+	
+	If NTF_ChatCHN2 <> 0
+		If ChannelPlaying(NTF_ChatCHN2) Then PauseChannel(NTF_ChatCHN2)
+	EndIf
+	
 End Function
 
 Function ResumeSounds()
@@ -5576,6 +6191,31 @@ Function ResumeSounds()
 	If BreathCHN <> 0 Then
 		If ChannelPlaying(BreathCHN) Then ResumeChannel(BreathCHN)
 	EndIf
+	
+	If NTF_AmbienceCHN <> 0
+		If ChannelPlaying(NTF_AmbienceCHN) Then ResumeChannel(NTF_AmbienceCHN)
+	EndIf
+	
+	If GunCHN <> 0
+		If ChannelPlaying(GunCHN) Then ResumeChannel(GunCHN)
+	EndIf
+	
+	If GunCHN2 <> 0
+		If ChannelPlaying(GunCHN2) Then ResumeChannel(GunCHN2)
+	EndIf
+	
+	If ChatSFXCHN <> 0
+		If ChannelPlaying(ChatSFXCHN) Then ResumeChannel(ChatSFXCHN)
+	EndIf
+	
+	If NTF_ChatCHN1 <> 0
+		If ChannelPlaying(NTF_ChatCHN1) Then ResumeChannel(NTF_ChatCHN1)
+	EndIf
+	
+	If NTF_ChatCHN2 <> 0
+		If ChannelPlaying(NTF_ChatCHN2) Then ResumeChannel(NTF_ChatCHN2)
+	EndIf
+	
 End Function
 
 Function GetStepSound()
@@ -5589,7 +6229,7 @@ Function GetStepSound()
 			texture = GetBrushTexture(brush,1)
 			If texture <> 0 Then
 				name = StripPath(TextureName(texture))
-				If (name<>"") FreeTexture(texture)
+				FreeTexture(texture)
 				FreeBrush(brush)
 				For mat.Materials = Each Materials
 					If mat\name = name Then
@@ -6273,7 +6913,7 @@ End Function
 
 
 Function UpdateMTF%()
-	If PlayerRoom\RoomTemplate\Name = "gateaentrance" Then Return
+	;If PlayerRoom\RoomTemplate\Name = "gateaentrance" Then Return
 	
 	Local r.Rooms, n.NPCs
 	Local dist#, i%
@@ -6289,29 +6929,29 @@ Function UpdateMTF%()
 			
 			If entrance <> Null Then 
 				If Abs(EntityZ(entrance\obj)-EntityZ(Collider))<30.0 Then
-					If PlayerRoom\RoomTemplate\Name<>"room860" And PlayerRoom\RoomTemplate\Name<>"pocketdimension" Then
+					;If PlayerRoom\RoomTemplate\Name<>"room860" And PlayerRoom\RoomTemplate\Name<>"pocketdimension" Then
 						PlaySound LoadTempSound("SFX\MTF\Announc.ogg")
-					EndIf
+					;EndIf
 					
 					MTFtimer = 1
-					Local leader.NPCs
-					For i = 0 To 2
-						n.NPCs = CreateNPC(NPCtypeMTF, EntityX(entrance\obj)+0.3*(i-1), 1.0,EntityZ(entrance\obj)+8.0)
-						
-						If i = 0 Then 
-							leader = n
-						Else
-							n\MTFLeader = leader
-						EndIf
-						
-						n\PrevState = 0
-						n\PrevX = i
-					Next
+					If (Not IntroEnabled%)
+						For i = 1 To 2
+							n.NPCs = CreateNPC(NPCtypeMTF2, EntityX(entrance\obj), 0.5,EntityZ(entrance\obj)-(0.6*i))
+							n\NPCID = i
+							n\PrevState = 0
+							n\PrevX = i
+							n\PathTimer# = FPSFactor#
+							If i > 1 Then
+								n\LastSeen = 1000.0
+								n\Target = Before n
+								n\State = 3
+							EndIf
+						Next
+					EndIf
 				EndIf
 			EndIf
 		EndIf
 	Else
-		Return
 		
 		;mtf spawnannut, aletaan p‰ivitt‰‰ teko‰ly‰
 		
@@ -6355,7 +6995,8 @@ Function UpdateMTF%()
 			Next
 			
 			For n.NPCs = Each NPCs
-				If n\NPCtype = NPCtypeMTF And n\PrevX = 0 And n\LastSeen =< 0 And n\Target = Null And n\PathStatus <> 1 Then
+				If n\NPCtype = NPCtypeMTF2 And n\Target = Null And n\PathStatus <> 1 And n\State < 4 Then
+					DebugLog "MTF 1"
 					;etsit‰‰n reitti l‰himp‰‰n huoneeseen jota ei ole viet‰ k‰yty tutkimassa
 					Local targetRoom%, targetRoomDist#=500.0
 					For i = 0 To 6
@@ -6371,9 +7012,10 @@ Function UpdateMTF%()
 					Next
 					
 					If targetRoomDist < 500.0 Then
-						If Distance(EntityX(MTFrooms[targetRoom]\obj,True),EntityZ(MTFrooms[targetRoom]\obj,True),EntityX(n\Collider),EntityZ(n\Collider))< 8.0 Then
+						If Distance(EntityX(MTFrooms[targetRoom]\obj,True),EntityZ(MTFrooms[targetRoom]\obj,True),EntityX(n\Collider),EntityZ(n\Collider))< 4.0 Then
 							;tiimi saapunut huoneeseen, merkataan ett‰ se on tarkistettu
 							MTFroomState[targetRoom]=2
+							DebugLog "MTF 2"
 							
 							Select MTFrooms[targetRoom]\RoomTemplate\Name 
 								Case "room106"
@@ -6381,18 +7023,17 @@ Function UpdateMTF%()
 									
 									n\PathStatus = FindPath(n, EntityX(MTFrooms[targetRoom]\Objects[9],True),EntityY(MTFrooms[targetRoom]\Objects[9],True),EntityZ(MTFrooms[targetRoom]\Objects[9],True))
 									n\PathTimer = 70*30
-									n\State=3
-								Case "start"
-									If (Curr173\Idle<3) Then
-										PlayMTFSound(LoadTempSound("SFX\MTF\173cont"+Rand(1,4)+".ogg"),n)
-									EndIf
-									
-									PositionEntity Curr173\Collider, EntityX(r\obj,True)+4736*RoomScale,450*RoomScale,EntityZ(r\obj,True)+1692*RoomScale
-									Curr173\Idle = 3
+									n\State=2
 								Default
 									For n2.npcs = Each NPCs
-										If n2 <> n And n2\PrevState = n\PrevState And n2\NPCtype = NPCtypeMTF Then
-											n2\state = 0
+										;If n2 <> n And n2\PrevState = n\PrevState And n2\NPCtype = NPCtypeMTF2 Then
+										;	n2\state = 2
+										;EndIf
+										If n2 <> n And n2\State = 2 And n2\NPCtype = NPCtypeMTF2
+											n\State = 3
+											n\Target = Before n
+										ElseIf n2 <> n And n2\State = 3 And n2\NPCtype = NPCtypeMTF2
+											n\State = 2
 										EndIf
 									Next															
 							End Select
@@ -6431,33 +7072,38 @@ Function UpdateMTF%()
 							
 							If closestRoom <> Null Then
 								If EntityDistance(Collider, n\Collider)<HideDistance Then
+								;If EntityDistance(Collider, n\Collider)<1000 Then
 									n\PathStatus = FindPath(n, EntityX(closestRoom\obj,True)+Rnd(-0.3,0.3), 0.4, EntityZ(closestRoom\obj,True)+Rnd(-0.3,0.3))
 									
 									If n\PathStatus = 2 Then 
 										;MTFroomState[targetRoom]=3
 									ElseIf n\PathStatus = 1
-										;For n2.npcs = Each NPCs
-										;	If n2 <> n And n2\NPCtype = NPCtypeMTF And n2\State = 0 Then
-										;		n2\state = 4
-										;		n2\target = n
-										;	EndIf
-										;Next
+										For n2.npcs = Each NPCs
+											If n2 <> n And n2\NPCtype = NPCtypeMTF2 And n2\State = 0 Then
+												n2\state = 3
+												n2\target = n
+											EndIf
+										Next
 										MTFroomState[targetRoom]=1 
-										n\State = 3
+										n\State = 2
 									EndIf		
 									
 								Else
-									PositionEntity n\Collider, EntityX(closestRoom\obj), 0.5, EntityZ(closestRoom\obj)
-									ResetEntity n\Collider
-									
-									For n2.npcs = Each NPCs
-										If n2 <> n And n2\NPCtype = NPCtypeMTF Then
-											If EntityDistance(n2\collider, Collider)>HideDistance Then
-												PositionEntity n2\Collider, EntityX(closestRoom\obj)+Rnd(-0.2,0.2), 0.5, EntityZ(closestRoom\obj)+Rnd(-0.2,0.2)
-												ResetEntity n2\Collider
+									;If Rand(20)=1
+										PositionEntity n\Collider, EntityX(closestRoom\obj), 0.5, EntityZ(closestRoom\obj)
+										ResetEntity n\Collider
+										;TeleportCloser(n)
+										
+										For n2.npcs = Each NPCs
+											If n2 <> n And n2\NPCtype = NPCtypeMTF2 Then
+												If EntityDistance(n2\collider, Collider)>HideDistance Then
+													PositionEntity n2\Collider, EntityX(closestRoom\obj)+Rnd(-0.2,0.2), 0.5, EntityZ(closestRoom\obj)+Rnd(-0.2,0.2)
+													ResetEntity n2\Collider
+													;TeleportCloser(n)
+												EndIf
 											EndIf
-										EndIf
-									Next										
+										Next										
+									;EndIf
 								EndIf
 							EndIf
 							
@@ -6473,6 +7119,7 @@ Function UpdateMTF%()
 		EndIf
 		
 	EndIf
+
 End Function
 
 
@@ -6550,7 +7197,7 @@ Function UpdateInfect()
 					PlayerRoom\NPC[0]\Sound = LoadSound_Strict("SFX\008death2.ogg")
 					PlayerRoom\NPC[0]\SoundChn = PlaySound(PlayerRoom\NPC[0]\Sound)
 					
-					DeathMSG = "Subject D-9341 found ingesting Dr. [REDACTED] at Sector [REDACTED]. Subject immediately terminated by Nine Tailed Fox and sent for autopsy. "
+					DeathMSG = "MTF Unit [REDACTED] found ingesting Dr. [REDACTED] at Sector [REDACTED]. Subject immediately terminated by Nine Tailed Fox and sent for autopsy. "
 					DeathMSG = DeathMSG + "SCP-008 infection was confirmed, after which the body was incinerated."
 					
 					Kill()
@@ -7408,8 +8055,9 @@ Function UpdateScreenGamma()
 	UpdateGamma
 End Function
 ;~IDEal Editor Parameters:
-;~F#1E#EC#F0#F7#326#436#4AA#54B#5C2#5D9#5E6#6B8#783#851#9F7#C78#E5A#11BA#1284#128F
-;~F#139E#141F#1450#152F#1541#1567#1574#158E#15AD#15CC#15EA#15EE#160E#1614#163F#17CD#194E#19C5#19CB#19D5
-;~F#19E1#19EC#19F0#1A2B#1A33#1A3B#1A42#1A49#1A58#1A67#1A85#1AB3#1ABA#1ACD#1AE6#1B13#1B1E#1B23#1B3D#1B49
-;~F#1B64#1BB6#1BC4#1BCC#1BD8#1BE1#1C0A#1C0F#1C14#1C19#1C22#1C2A#1CA8#1CB2#1CD7#1CE7
+;~F#1E#6E#EC#F0#F7#326#418#436#4AA#4B7#54B#5C2#5D9#5E6#618#6BB#786#854#8E7#9FA
+;~F#C7B#E5D#11BB#1285#1290#139F#1420#1451#1530#1542#155E#1568#1575#158F#15AE#15CD#15EB#15EF#160F#1615
+;~F#1640#17CE#194A#19C1#19C7#19D1#19DD#19E8#19EC#1A27#1A2F#1A37#1A3E#1A45#1A54#1A63#1A81#1AAF#1AB6#1AC9
+;~F#1AE2#1B0F#1B1A#1B1F#1B39#1B45#1B60#1BB2#1BC0#1BC8#1BD4#1BDD#1C06#1C0B#1C10#1C15#1C1E#1C26#1CA4#1CAE
+;~F#1CD3#1CE3
 ;~C#Blitz3D
