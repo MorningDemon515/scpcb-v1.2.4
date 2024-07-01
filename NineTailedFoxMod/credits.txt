@@ -1,0 +1,21 @@
+
+**** CREDITS ********************************************
+ENDSHN/PXLSHN: Main Leader,Programming,Sounds (few sounds),Textures,Models,Mapping,Voice Acting
+Vane Brain: 2nd Main Leader,Mapping,Loadingscreens,SCP-Ideas,Documents,Textures
+revo794: Sound Effects,Music
+undead003: Voice Acting (the player)
+Alphive: Textures,Music
+Turtle Sandwich/Catnipbuddy: Textures,Sound Effects
+enotovski: Hand Model ReTexture
+D-7650: Sound Effects,Music (some Ambient Themes)
+FireFox: SCP-457 Sighting Sound
+PolkovnikAbramov (Arseny): Voice Acting (Class-D + some Intro lines)
+Alex Morganidze: Voice Acting (MTF Unit)
+Anon4743: Keycard ReTexture + SCP-109 model
+Took from Fan Breach & by Redbull.Ivan: SCP-1499 Model (Gas Mask)
+*********************************************************
+
+Thank you very much for playing my mod :D
+
+BTW: 	If you feel you had done something for the mod and you are not in the credits, please let me know and
+	I will update the credits!

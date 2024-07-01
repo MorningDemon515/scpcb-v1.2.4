@@ -1,0 +1,158 @@
+v0.1.0 --- "The Big Update"
+- new Intro added
+  * programming made by "ENDSHN"
+  * room modelling made by "Vane Brain"
+  * voice lines made by "Arseny" and "ENDSHN"
+- added following SCPs:
+  * SCP-1126
+  * SCP-1499
+  * SCP-109
+  * SCP-198
+- added more events to the game (random sound events, over events still WIP)
+- MTF Units now have a fixed AI
+  * they can now walk around and they also can interact with some SCPs (not 100% done yet)
+  * they shoot at Class-Ds and they can kill them
+- improved the guns
+  * P90: It's having a scope
+  * the gun animation now got improved a bit
+- added manual lighting:
+  * all objects except the map will be brightened up by the lights inside the rooms
+- remixed the SCP-457 Theme a bit (extra sound effects in the background of it)
+- more ambient sounds by "D-7650" and "revo794"
+- added SZL feature (Seperate Zone Loading)
+  * currently WIP, will be fixed partially every update
+  * if your game should not work properly then disable the feature in the options
+  * will not have any effect on custom maps!
+- new Menu design
+  * new options screen
+  * achievements menu
+- achievements will now be saved at the end of the game
+- added some new achievements to the game (not all of them can be unlocked)
+- added random appearing sound-events
+  * sounds made by "revo794"
+- improved the player's voice
+  * the lines now depend on if the player wears the gasmask or not
+- new rooms added (room2scps2, room2offices4, room3offices and room1162)
+  * all made by "Vane Brain"
+- room3ct got now readded! :D (thanks to SZL feature)
+- changed the KeyCard textures (by "Anon4743")
+- bugfixes:
+  * decreased the polygon count of the guns another time
+  * deleted some surfaces from the gun's viewmodels
+  * the corpse in "room4tunnels" now got moved away from the middle
+  * ambient sounds won't be loaded in memory, instead they will be loaded seperately
+  * fixed some misaligned textures in "room2servers2"
+  * fixed the video quality at the beginning of the game (Thanks to "Vane Brain") :D
+  * room3gw should now appear in Zone 3 rather than in Zone 2
+
+----------------------------------------------------------------------------------
+
+v0.0.3
+- ported this mod from SCP:CB version 1.1.5 to 1.2.2
+- bugfixes:
+  * the guns shouldn't be invisible if you respawn using the "Load Game" button (after death)
+  * changed Apptitle to it's real version (in 0.0.2 it was 0.0.1, now it's 0.0.3)
+  * the death messages should now call the player "MTF-Unit [Redacted]" instead of "D-9341"
+  * command "ntf help" got changed to "ntfhelp", so the command can be typed now without getting the message
+    "Command not found"
+  * hopefully 035, 049-2 and the nazi don't have white textures anymore
+  * the "P90 lagging" bug should be fixed now (the texture "p90_Tex_0005_1.jpg" had a size of "2048X2048",
+    now it has a size of "1024X1024")
+  * hopefully the corpses and GateB-Skybox won't show the "missing texture" anymore
+  * "room2gs" and "room3ct" are now RMesh files (hopefully this will fix some more lagging bugs)
+  * reduced the polygon count of all the guns (ViewModel and Item Model)
+- added ClassD NPC:
+  * they are just attacking you (and can kill you), currently not having a very good AI
+  * you can kill them (I think everybody waited for that)
+  * currently not spawning, to spawn one, type "spawn d2" into the console
+- added a lot of ambient sounds (by "revo794")
+- a lot of improvements to "room3ct" (by "Vane Brain")
+  ###########################################################################################################
+  #CURRENTLY THIS ROOM ISN'T PRESENTED IN THIS VERSION DUE TO LAGS, A UPDATED VERSION WITH IT WILL COME SOON#
+  ###########################################################################################################
+- the INI files for the new Materials and Rooms are now in the seperate folder "NineTailedFoxMod\Data\"
+- improved the StrictLoad-Functions
+  * hopefully another lagging cause bug will be fixed by that
+  * if a function is returning an error and the "Disable Console Auto Opening" option has enabled, it will
+    inform the users that a error/many errors happened (it will show how many errors occured before the
+    console has been opened)
+- new rooms added
+  * "room2gw","room3gw","room1lifts","room2servers2" by "Vane Brain"
+  * "room457" by "ENDSHN"
+- added SCP-457 NPC:
+  * it can be found inside the "room457" room (down the tunnels)
+  * currently has a WIP model (106's model with a black texture + burning around him)
+- changed Player step-sounds (by "revo794")
+- new loading screens
+  * "FN P90", "SCP-457" by "Vane Brain"
+- changed the gun-rendering slightly
+  * this will hopefully fix some lagging bugs too
+- changed the player's voice (they are filtered rather than having the radio effect applied)
+- disabling a Tesla Gate works now (still WIP, but you can disable them at least :D )
+- you already have a built-in radio (headset), you can toggle between the channels 1-5 by pressing "E"
+- you can only use the "voice-commands" if you are on Channel 4 (the MTF-Unit channel)
+
+----------------------------------------------------------------------------------
+
+v0.0.2
+- bugfixes:
+  * guns will now be hidden if the player is getting killed (this will also fix the "gun spins uncontrolable
+    upon death" bug)
+  * guns can't be used if the player is dead
+  * the font "Capture it.ttf" is now in "NineTailedFoxMod\GFX\" instead of "GFX\"
+  * the message if you try to pick up a USP magazine but have the maximum reached will now "say" the correct
+    gun ("USP Tactical" instead of "FN P90")
+  * the bug with the "GunStorage" room clipping through the cafeteria is hopefully fixed
+  * the game shouldn't crash at 25% if reloading it anymore
+- the guns are now a bit animated if the player is idle
+- changed Launcher/Menu/PauseMenu:
+  * changed Launcher Background, Menu Background, "173"-Background, Pause Menu Background
+  * changed menu music
+- improvements to the "StrictLoad" functions:
+  * now every StrictLoad-function (except "LoadMesh_Strict" and "LoadAnimMesh_Strict") now returning a error
+    in the console rather than crashing the game
+  * Image/Textures/Brushes if missing/couldn't be loaded replacing it's overlay with a "Missing-Texture"
+    overlay
+  * a missing/not loaded Font will be replaced with the "Arial" font
+  * if a resource couldn't be loaded (if the Resource is existing, but couldn't be loaded due Blitz3D returned
+    it's handle to be 0) will be loaded again, if it's still not working, then it will use the replacing method
+- updated the "room3ct"-room:
+  * now there are all the doors which are needed for the room
+  * the elevators are working in that room
+  * this room has it's own theme ("hallways.ogg")
+  * items added in the little "storage" part
+  * a event added which adds three 049-2 (only two without aggressive NPCs) instances and 106
+    (his chance on spawning there is 60%, with aggresive NPCs on, his chance of spawning is 90%)
+  * added a NVG, a USP, a P90 and a dead scientist in the construction tunnels ("room3ct")
+  * added a battery, a first aid kit and a S-Nav 300 Navigator inside the little storage area next to
+    the elevators
+- added a command to show all new added commands ("ntf help")
+- added a new options tab (under options the button called "NTF-Mod Options")
+  * now options such as "Disable Aim Cross" can be changed using the Options
+- made the P90 more accurate
+- changed the positions of the guns (hopefully avoiding "wall clipping")
+- changed gun's handmodel texture (can only be seen barely)
+- saving should work properly now
+- added two bodys appearing
+  * one inside the construction tunnels
+  * another one located in "room4tunnels"
+- changed Apptitle
+- added a little "chat" on Channel 4 (between a scientist and a MTF unit)
+- new ambient sounds added
+- added a level 5 key card as standard in the inventory
+- added a 4th gun slot (currently as "holstered")
+
+----------------------------------------------------------------------------------
+
+v0.0.1 
+- first release:
+  * P90,USP,Crowbar as weapons
+  * a small gun-storage room (room2gs) and a construction tunnel entrance room (room3ct)
+  * added new MTF-NPC (MTF2, it doesn't see the player as a target to terminate), currently a broken AI
+  * changed the system of the Ballistic Vest (by double clicking it in the Inventory, you would restore
+    it's health and the "finevest" adds a little addition too)
+  * 049-2 instances are damaging the Kevlar before the player gets Injuries and Bloodloss
+  * the player spawns at the Gate-A Entrance rather than in 173-s Chamber (only if the Intro has been
+    deactivated)
+  * the Console won't open automatically if a sound couldn't be loaded (in my opinion it was pretty 
+    annoying)
