@@ -2021,36 +2021,6 @@ DrawLoading(100, True)
 
 LoopDelay = MilliSecs()
 
-Global Movie_ShouldPlay% = GetINIInt("NineTailedFoxMod\options.INI","ingame","play movie","1")
-Global ThreadFunctionPointer,Thread
-Global MoviePlayed%
-Global movie, movieSFX%
-
-If MoviePlayed%=False And Movie_ShouldPlay%=True
-	FlushKeys()
-	FlushMouse()
-	movieSFX% = LoadSound("NineTailedFoxMod\GFX\menu\ntf_aud_track.ogg")
-	ThreadFunctionPointer = FunctionPointer()
-	Goto skip1
-	ThreadFunction()
-	.skip1
-	movie = OpenMovie("NineTailedFoxMod\GFX\menu\ntf_intro_final.mpg")
-	If ChannelPlaying(MusicCHN) Then StopChannel(MusicCHN)
-	Thread = CreateThread(ThreadFunctionPointer,100)
-	PlaySound(movieSFX%)
-	Repeat
-		ShouldPlay% = 11
-		NowPlaying% = 11
-	Until MoviePlaying(movie)=False Or KeyHit(1) Or KeyHit(57) Or MouseHit(1)
-	CloseMovie(movie)
-	FreeThread(Thread)
-	FreeSound movieSFX%
-	movie = 0
-	movieSFX% = 0
-	
-	MoviePlayed% = True
-EndIf
-
 ;----------------------------------------------------------------------------------------------------------------------------------------------------
 ;----------------------------------------------       		MAIN LOOP                 ---------------------------------------------------------------
 ;----------------------------------------------------------------------------------------------------------------------------------------------------
