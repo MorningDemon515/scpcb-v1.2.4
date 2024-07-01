@@ -127,8 +127,8 @@ Function InitItemTemplates()
 	it = CreateItemTemplate("Document SCP-457 Page 2/2","paper","GFX\items\paper.x","GFX\items\INVpaper.jpg","NineTailedFoxMod\GFX\items\doc457_2.jpg", 0.003) : it\sound = 0
 	it = CreateItemTemplate("SCP-1499","scp1499","NineTailedFoxMod\GFX\items\SCP-1499 from Fan-Breach.3ds","NineTailedFoxMod\GFX\items\INVscp1499.jpg", "", 0.023,"NineTailedFoxMod\GFX\items\SCP-1499.jpg")
 	it\sound = 2
-	CreateItemTemplate("SCP-198","scp198","NineTailedFoxMod\GFX\items\scp198.b3d","NineTailedFoxMod\GFX\items\INVfreezer.jpg","",0.04)
-	CreateItemTemplate("SCP-109","scp109","NineTailedFoxMod\GFX\items\scp109.b3d","NineTailedFoxMod\GFX\items\INVfreezer.jpg","",0.0009)
+	CreateItemTemplate("SCP-198","scp198","NineTailedFoxMod\GFX\items\scp198.b3d","NineTailedFoxMod\GFX\items\INVscp198.jpg","",0.04)
+	CreateItemTemplate("SCP-109","scp109","NineTailedFoxMod\GFX\items\scp109.b3d","NineTailedFoxMod\GFX\items\INVscp109.jpg","",0.0009)
 	it = CreateItemTemplate("Document SCP-109", "paper", "GFX\items\paper.x", "GFX\items\INVpaper.jpg", "NineTailedFoxMod\GFX\items\doc109.jpg", 0.003) : it\sound = 0
 	it = CreateItemTemplate("Document SCP-1162", "paper", "GFX\items\paper.x", "GFX\items\INVpaper.jpg", "NineTailedFoxMod\GFX\items\doc1162.jpg", 0.003) : it\sound = 0
 	

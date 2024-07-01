@@ -1,3 +1,11 @@
+v0.1.1
+- fixed the MAV crashing in-game (bug with the ClassD spawning code)
+- SCP-109 and SCP-198 should now display the icons
+- after the Intro, props and other models should now have the correct Brightness values
+- added some doors to GateAIntro
+
+----------------------------------------------------------------------------------
+
 v0.1.0 --- "The Big Update"
 - new Intro added
   * programming made by "ENDSHN"

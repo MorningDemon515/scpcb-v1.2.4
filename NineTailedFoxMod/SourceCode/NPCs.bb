@@ -166,8 +166,53 @@ Function CreateNPC.NPCs(NPCtype%, x#, y#, z#)
 			n\Collider = CreatePivot()
 			EntityRadius n\Collider,0.2
 			EntityType n\Collider,HIT_PLAYER
-			n\obj = LoadAnimMesh_Strict("NineTailedFoxMod\GFX\npcs\classd2.b3d")
+			;n\obj = LoadAnimMesh_Strict("NineTailedFoxMod\GFX\npcs\classd2.b3d")
 			;n\obj = CopyEntity(ClassDObj2)
+			
+			Local random% = Rand(0,3)
+			
+			If random% = 0
+				n\obj = CopyEntity(ClassDObj2)
+			Else
+				Select random%
+					Case 1
+						n\Texture = "NineTailedFoxMod\GFX\npcs\classd2.jpg"
+					Case 2
+						n\Texture = "NineTailedFoxMod\GFX\npcs\classd3.jpg"
+					Case 3
+						n\Texture = "NineTailedFoxMod\GFX\npcs\classd5.jpg"
+				End Select
+				For n2.NPCs = Each NPCs
+					If n2 <> n
+						If n2\NPCtype = NPCtypeD2
+							If n\Texture = n2\Texture
+								n\obj = CopyEntity(n2\obj)
+							EndIf
+						EndIf
+					EndIf
+				Next
+			EndIf
+			
+			If n\obj = 0
+				n\obj = LoadAnimMesh_Strict("NineTailedFoxMod\GFX\npcs\classd2.b3d")
+				For i = 1 To CountSurfaces(n\obj)
+					sf = GetSurface(n\obj,i)
+					b = GetSurfaceBrush( sf )
+					If b<>0 Then
+						t1 = GetBrushTexture(b,0)
+						If t1<>0 Then
+							Select Lower(StripPath(TextureName(t1)))
+								Case "classd1.jpg"
+									BrushTexture b, ClassDTextures(random%), 0, 0
+									PaintSurface sf,b 
+							End Select
+							FreeTexture t1
+						EndIf
+						FreeBrush b
+					EndIf
+				Next
+				DebugLog "New ClassD Model loaded/created"
+			EndIf
 			
 			MeshCullBox (n\obj, -MeshWidth(ClassDObj2), -MeshHeight(ClassDObj2), -MeshDepth(ClassDObj2), MeshWidth(ClassDObj2)*2, MeshHeight(ClassDObj2)*2, MeshDepth(ClassDObj2)*2)
 			
@@ -189,24 +234,6 @@ Function CreateNPC.NPCs(NPCtype%, x#, y#, z#)
 			EntityFX n\HitBoxHead%,FE_WIRE
 			EntityAlpha n\HitBoxHead%,0.0
 			EntityPickMode n\HitBoxHead%,2
-			
-			Local random% = Rand(0,3)
-			For i = 1 To CountSurfaces(n\obj)
-				sf = GetSurface(n\obj,i)
-				b = GetSurfaceBrush( sf )
-				If b<>0 Then
-					t1 = GetBrushTexture(b,0)
-					If t1<>0 Then
-						Select Lower(StripPath(TextureName(t1)))
-							Case "classd1.jpg","classd2.jpg","classd3.jpg","classd5.jpg"
-								BrushTexture b, ClassDTextures(random%), 0, 0
-								PaintSurface sf,b 
-						End Select
-						FreeTexture t1
-					EndIf
-					FreeBrush b
-				EndIf
-			Next
 			
 			;CreateNPCHitBox(n,1,"Bip01_Head")
 			
@@ -1615,9 +1642,9 @@ Function UpdateNPCs()
 				
 				RotateEntity n\obj, 0.0, EntityYaw(n\Collider), 0
 				
-				If EntityDistance(n\Collider,Collider)>HideDistance
-					RemoveNPC(n)
-				EndIf
+				;If EntityDistance(n\Collider,Collider)>HideDistance
+				;	RemoveNPC(n)
+				;EndIf
 				;[End Block]
 			Case NPCtype457
 				prevFrame# = n\Frame

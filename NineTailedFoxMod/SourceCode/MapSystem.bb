@@ -1749,6 +1749,10 @@ Function FillRoom(r.Rooms)
 			r\Objects[11] = CreatePivot()
 			PositionEntity(r\Objects[11],r\x+2000.0*RoomScale,r\y+64.0*RoomScale,r\z+64.0*RoomScale,True)
 			EntityParent r\Objects[11],r\obj
+			r\RoomDoors[2] = CreateDoor(r\zone, r\x - 4064.0 * RoomScale, (-1280.0+12000.0)*RoomScale, r\z + 3952.0 * RoomScale, 0, r, False)
+			r\RoomDoors[2]\AutoClose = False : r\RoomDoors[2]\open = False : r\RoomDoors[2]\locked = True
+			r\RoomDoors[3] = CreateDoor(r\zone,r\x + 0.0*RoomScale,r\y,r\z - 1008.0*RoomScale,0,r,False,False)
+			r\RoomDoors[3]\AutoClose = False : r\RoomDoors[3]\open = False : r\RoomDoors[3]\locked = True
 		Case "room2gs"
 			r\RoomDoors[0] = CreateDoor(r\zone,r\x + 256.0*RoomScale,r\y,r\z - 512.0*RoomScale,90,r,False,False,3)
 			r\RoomDoors[1] = CreateDoor(r\zone,r\x - 256.0*RoomScale,r\y,r\z + 512.0*RoomScale,90,r,False,False,3)

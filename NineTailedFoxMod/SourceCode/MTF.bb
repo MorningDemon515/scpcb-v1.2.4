@@ -2926,6 +2926,8 @@ Function DeInitIntro()
 		EndIf
 	Next
 	
+	Brightness = 40
+	
 	For i% = 0 To 70
 		FPSfactor = 1.0
 		FlushKeys()
